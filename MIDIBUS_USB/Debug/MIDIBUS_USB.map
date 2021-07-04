@@ -258,61 +258,6 @@ Discarded input sections
  .debug_frame   0x00000000       0x20 MCP2517.o
  .ARM.attributes
                 0x00000000       0x32 MCP2517.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .group         0x00000000        0x8 MIDI_Driver.o
- .text          0x00000000        0x0 MIDI_Driver.o
- .data          0x00000000        0x0 MIDI_Driver.o
- .bss           0x00000000        0x0 MIDI_Driver.o
- .text._ZN6MIDI_C7ConvertEP11MIDI1_msg_tP13MIDI2_voice_t
-                0x00000000       0x16 MIDI_Driver.o
- .text._ZN6MIDI_C7ConvertEP13MIDI2_voice_tP11MIDI1_msg_t
-                0x00000000       0x4c MIDI_Driver.o
- .rodata        0x00000000       0xf4 MIDI_Driver.o
- .text._ZN6MIDI_C7ConvertEP11MIDI1_msg_tP11MIDI2_com_t
-                0x00000000        0x2 MIDI_Driver.o
- .text._ZN6MIDI_C7ConvertEP11MIDI2_com_tP11MIDI1_msg_t
-                0x00000000       0x1c MIDI_Driver.o
- .text._ZN6MIDI_C6EncodeEPcP13MIDI2_voice_t
-                0x00000000       0x98 MIDI_Driver.o
- .text._ZN6MIDI_C6EncodeEPcP15MIDI2_data128_t
-                0x00000000       0x50 MIDI_Driver.o
- .text._ZN6MIDI_C6EncodeEPcP14MIDI2_data64_th
-                0x00000000       0x7e MIDI_Driver.o
- .text._ZN6MIDI_C6EncodeEPcP11MIDI2_com_th
-                0x00000000       0x8e MIDI_Driver.o
- .text._ZN6MIDI_C6EncodeEPcP12MIDI2_util_t
-                0x00000000       0x12 MIDI_Driver.o
- .text._ZN6MIDI_C6EncodeEPcP11MIDI1_msg_th
-                0x00000000       0x88 MIDI_Driver.o
- .text._ZN6MIDI_C6DecodeEPch
-                0x00000000      0x4dc MIDI_Driver.o
- .debug_info    0x00000000     0x10a4 MIDI_Driver.o
- .debug_abbrev  0x00000000      0x2c6 MIDI_Driver.o
- .debug_loc     0x00000000      0x8e8 MIDI_Driver.o
- .debug_aranges
-                0x00000000       0x70 MIDI_Driver.o
- .debug_ranges  0x00000000      0x120 MIDI_Driver.o
- .debug_macro   0x00000000       0x72 MIDI_Driver.o
- .debug_macro   0x00000000      0x9a6 MIDI_Driver.o
- .debug_macro   0x00000000       0x1c MIDI_Driver.o
- .debug_macro   0x00000000       0x22 MIDI_Driver.o
- .debug_macro   0x00000000       0x87 MIDI_Driver.o
- .debug_macro   0x00000000       0x51 MIDI_Driver.o
- .debug_macro   0x00000000       0xef MIDI_Driver.o
- .debug_macro   0x00000000       0x6a MIDI_Driver.o
- .debug_macro   0x00000000      0x1df MIDI_Driver.o
- .debug_line    0x00000000      0x514 MIDI_Driver.o
- .debug_str     0x00000000     0x3fdd MIDI_Driver.o
- .comment       0x00000000       0x5a MIDI_Driver.o
- .debug_frame   0x00000000      0x10c MIDI_Driver.o
- .ARM.attributes
-                0x00000000       0x32 MIDI_Driver.o
  .group         0x00000000        0x8 src/ASF/common2/boards/user_board/init.o
  .group         0x00000000        0x8 src/ASF/common2/boards/user_board/init.o
  .group         0x00000000        0x8 src/ASF/common2/boards/user_board/init.o
@@ -6164,7 +6109,6 @@ LOAD d:/program files (x86)/atmel studio/7.0/toolchain/arm/arm-gnu-toolchain/bin
 LOAD d:/program files (x86)/atmel studio/7.0/toolchain/arm/arm-gnu-toolchain/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/crt0.o
 LOAD main.o
 LOAD MCP2517.o
-LOAD MIDI_Driver.o
 LOAD src/ASF/common2/boards/user_board/init.o
 LOAD src/ASF/common/services/sleepmgr/samd/sleepmgr.o
 LOAD src/ASF/common/services/usb/class/cdc/device/udi_cdc.o
@@ -6955,20 +6899,20 @@ OUTPUT(MIDIBUS_USB.elf elf32-littlearm)
  .debug_macro   0x0002a647       0x35 src/ASF/sam0/utils/syscalls/gcc/syscalls.o
  .debug_macro   0x0002a67c      0x122 src/ASF/sam0/utils/syscalls/gcc/syscalls.o
 
-.debug_line     0x00000000     0x923d
- .debug_line    0x00000000     0x113d main.o
- .debug_line    0x0000113d      0xe50 src/ASF/common2/boards/user_board/init.o
- .debug_line    0x00001f8d      0x923 src/ASF/common/utils/interrupt/interrupt_sam_nvic.o
- .debug_line    0x000028b0      0xa2b src/ASF/sam0/drivers/extint/extint_callback.o
- .debug_line    0x000032db      0xc8b src/ASF/sam0/drivers/extint/extint_sam_d_r_h/extint.o
- .debug_line    0x00003f66      0x955 src/ASF/sam0/drivers/port/port.o
- .debug_line    0x000048bb      0xd15 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da_ha1/clock.o
- .debug_line    0x000055d0      0xcd1 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da_ha1/gclk.o
- .debug_line    0x000062a1      0x9a2 src/ASF/sam0/drivers/system/pinmux/pinmux.o
- .debug_line    0x00006c43      0xa4c src/ASF/sam0/drivers/system/system.o
- .debug_line    0x0000768f     0x10fe src/ASF/sam0/drivers/usb/usb_sam_d_r/usb.o
- .debug_line    0x0000878d      0x6a7 src/ASF/sam0/utils/cmsis/samd21/source/gcc/startup_samd21.o
- .debug_line    0x00008e34      0x409 src/ASF/sam0/utils/syscalls/gcc/syscalls.o
+.debug_line     0x00000000     0x924f
+ .debug_line    0x00000000     0x114f main.o
+ .debug_line    0x0000114f      0xe50 src/ASF/common2/boards/user_board/init.o
+ .debug_line    0x00001f9f      0x923 src/ASF/common/utils/interrupt/interrupt_sam_nvic.o
+ .debug_line    0x000028c2      0xa2b src/ASF/sam0/drivers/extint/extint_callback.o
+ .debug_line    0x000032ed      0xc8b src/ASF/sam0/drivers/extint/extint_sam_d_r_h/extint.o
+ .debug_line    0x00003f78      0x955 src/ASF/sam0/drivers/port/port.o
+ .debug_line    0x000048cd      0xd15 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da_ha1/clock.o
+ .debug_line    0x000055e2      0xcd1 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da_ha1/gclk.o
+ .debug_line    0x000062b3      0x9a2 src/ASF/sam0/drivers/system/pinmux/pinmux.o
+ .debug_line    0x00006c55      0xa4c src/ASF/sam0/drivers/system/system.o
+ .debug_line    0x000076a1     0x10fe src/ASF/sam0/drivers/usb/usb_sam_d_r/usb.o
+ .debug_line    0x0000879f      0x6a7 src/ASF/sam0/utils/cmsis/samd21/source/gcc/startup_samd21.o
+ .debug_line    0x00008e46      0x409 src/ASF/sam0/utils/syscalls/gcc/syscalls.o
 
 .debug_str      0x00000000    0xc6695
  .debug_str     0x00000000    0x8bad9 main.o

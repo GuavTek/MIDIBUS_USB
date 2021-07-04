@@ -6,8 +6,6 @@ main.cpp
 
 MCP2517.cpp
 
-MIDI_Driver.cpp
-
 src\ASF\common2\boards\user_board\init.c
 
 src\ASF\common\services\sleepmgr\samd\sleepmgr.c
