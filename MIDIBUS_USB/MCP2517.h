@@ -18,6 +18,52 @@ enum class MCP2517_INSTR_E {
 	Write_Safe		= 0b1100
 };
 
+enum class MCP2517_ICODE_E {
+	TXQ = 0x00,
+	FIFO1 = 0x01,
+	FIFO2 = 0x02,
+	FIFO3 = 0x03,
+	FIFO4 = 0x04,
+	FIFO5 = 0x05,
+	FIFO6 = 0x06,
+	FIFO7 = 0x07,
+	FIFO8 = 0x08,
+	FIFO9 = 0x09,
+	FIFO10 = 0x0a,
+	FIFO11 = 0x0b,
+	FIFO12 = 0x0c,
+	FIFO13 = 0x0d,
+	FIFO14 = 0x0e,
+	FIFO15 = 0x0f,
+	FIFO16 = 0x10,
+	FIFO17 = 0x11,
+	FIFO18 = 0x12,
+	FIFO19 = 0x13,
+	FIFO20 = 0x14,
+	FIFO21 = 0x15,
+	FIFO22 = 0x16,
+	FIFO23 = 0x17,
+	FIFO24 = 0x18,
+	FIFO25 = 0x19,
+	FIFO26 = 0x1a,
+	FIFO27 = 0x1b,
+	FIFO28 = 0x1c,
+	FIFO29 = 0x1d,
+	FIFO30 = 0x1e,
+	FIFO31 = 0x1f,
+	NoInt = 0x80,
+	ErrorInt = 0x81,
+	WakeUp = 0x82,
+	RxOverflow = 0x83,
+	AddressError = 0x84,
+	MABFlow = 0x85,
+	TBCOverflow = 0x86,
+	OpModeChanged = 0x87,
+	InvalidMessage = 0x88,
+	TxEvent = 0x89,
+	TxAttempt = 0x8a
+};
+
 enum class MCP2517_ADDR_E {
 	C1CON			= 0x000,
 	C1NBTCFG		= 0x004,
@@ -63,6 +109,59 @@ enum class MCP2517_ADDR_E {
 	ECCSTAT			= 0xe10
 };
 
+// C1TREX transmit request
+// C1RXIF receive interrupt pending register
+// C1TREC and C1BDIAG for debugging
+// C1TXCON transmit queue control
+// C1TXQUA read transmit queue head
+
+struct CAN_Rx_msg_t {
+	uint32_t id;
+	uint8_t filterHit;
+	bool errorStatus;
+	bool idExtend;
+	uint8_t dataLength;
+};
+
+uint8_t CAN_FD_Get_DLC(uint8_t dataLength){
+	switch(dataLength){
+		case 0:
+			return 0;
+		case 1:
+			return 1;
+		case 2:
+			return 2;
+		case 3:
+			return 3;
+		case 4:
+			return 4;
+		case 5:
+			return 5;
+		case 6:
+			return 6;
+		case 7:
+			return 7;
+		case 8:
+			return 8;
+		case 12:
+			return 9;
+		case 16:
+			return 10;
+		case 20:
+			return 11;
+		case 24:
+			return 12;
+		case 32:
+			return 13;
+		case 48:
+			return 14;
+		case 64:
+			return 15;
+		default:
+			return 255;
+	}
+}
+
 class MCP2517_C : SPI_C {
 	public:
 		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
@@ -70,11 +169,37 @@ class MCP2517_C : SPI_C {
 		
 	protected:
 		void Reset();
+		void Generate_CAN_ID();
+		uint32_t CANID;
 };
 
 void MCP2517_C::Init(){
 	Reset();
 	uint32_t temp = 0;
+	
+	temp = 0;
+	temp |= 0b010 << 29;	// Payload size = 16 bytes
+	temp |= 0b00111 << 24;	// FIFO size = 8 messages
+	temp |= 0b11 << 21;		// Unlimited retransmission attempts
+	Write_Word_Blocking(MCP2517_ADDR_E::C1TXQCON, temp);
+	
+	temp = 0;
+	//temp |= 1 << 20;		// Tx event interrupt enable, Flag is in position 4
+	temp |= 1 << 17;		// Rx interrupt enable, Flag is in position 1
+	Write_Word_Blocking(MCP2517_ADDR_E::C1INT, temp);
+	
+	temp = 0;
+	temp |= 1 << 25;		// Enable edge filtering
+	temp |= 0b11 << 16;		// Auto delay compensation
+	Write_Word_Blocking(MCP2517_ADDR_E::C1TDC, temp);
+	
+	temp = 0;
+	temp |= 0x01 << 24;		// Time quanta prescaler Tq = 2/20MHz = 100ns
+	temp |= 0x05 << 16;		// Time segment 1 = 6 Tq
+	temp |= 0x02 << 8;		// Time segment 2 = 3 Tq
+	temp |= 0x00;			// Sync jump width = 1 Tq
+	Write_Word_Blocking(MCP2517_ADDR_E::C1NBTCFG, temp);
+	Write_Word_Blocking(MCP2517_ADDR_E::C1DBTCFG, temp);
 	
 	temp = 0;
 	temp |= 0b0010 << 28;	// 4 cycle delay between transmissions

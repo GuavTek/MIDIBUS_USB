@@ -18,7 +18,7 @@ struct spi_config_t {
 	uint8_t sercomNum;
 	uint8_t dipoVal;
 	uint8_t dopoVal;
-	uint32_t speed;
+	uint64_t speed;
 	uint8_t pin_cs;
 	uint32_t pinmux_mosi;
 	uint32_t pinmux_miso;
