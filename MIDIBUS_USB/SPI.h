@@ -33,6 +33,8 @@ class SPI_C
 		inline uint8_t Get_Status(){ return currentState; }
 		uint8_t Read_Buffer(char* buff);
 		uint8_t Send(char* buff, uint8_t length);
+		uint8_t Send(uint8_t length);
+		void Send_Blocking(char* buff, uint8_t length);
 		uint8_t Receive(uint8_t length);
 		inline void Handler();
 		SPI_C(Sercom* const SercomInstance, const spi_config_t config) : com(SercomInstance){
@@ -105,6 +107,29 @@ uint8_t SPI_C::Send(char* buff, uint8_t length){
 	}
 	
 	return 0;
+}
+
+// Send message already saved in msgbuff
+uint8_t SPI_C::Send(uint8_t length){
+	if (currentState == Idle) {
+		currentState = Tx;
+		msgLength = length;
+		txIndex = 0;
+		com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_DRE;
+		return 1;
+	}
+	
+	return 0;
+}
+
+void SPI_C::Send_Blocking(char* buff, uint8_t length){
+	for (uint8_t i = 0; i < length; i++) {
+		// Wait for data register to be empty
+		while (com->SPI.INTFLAG.bit.DRE == 0);
+		
+		// Send byte
+		com->SPI.DATA.reg = buff[i];
+	}
 }
 
 uint8_t SPI_C::Receive(uint8_t length){
