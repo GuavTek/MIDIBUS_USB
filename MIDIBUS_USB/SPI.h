@@ -83,17 +83,25 @@ class SPI_C
 		uint8_t msgLength;
 		uint8_t rxIndex;
 		uint8_t txIndex;
-		enum {Idle = 0, Rx, Tx} currentState;
+		enum {Idle = 0, Rx, Tx, Rx_Ready} currentState;
 		uint8_t ssPin;
 };
 
+// Reads the internal buffer of the object
+// Clears Rx_Ready state
 uint8_t SPI_C::Read_Buffer(char* buff){
 	for (uint8_t i = 0; i < msgLength; i++) {
 		buff[i] = msgBuff[i];
 	}
+	
+	if (currentState == Rx_Ready){
+		currentState = Idle;
+	}
+	
 	return rxIndex;
 }
 
+// Save to msgbuff then send
 uint8_t SPI_C::Send(char* buff, uint8_t length){
 	if (currentState == Idle) {
 		currentState = Tx;
@@ -145,6 +153,7 @@ uint8_t SPI_C::Receive(uint8_t length){
 	return 0;
 }
 
+// SPI interrupt handler
 inline void SPI_C::Handler(){
 	if (com->SPI.INTFLAG.bit.DRE && com->SPI.INTENSET.bit.DRE) {
 		// Data register empty
@@ -173,7 +182,7 @@ inline void SPI_C::Handler(){
 		if (rxIndex >= msgLength) {
 			com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_RXC;
 			if (currentState == Rx) {
-				currentState = Idle;
+				currentState = Rx_Ready;
 			}
 		}
 	}
