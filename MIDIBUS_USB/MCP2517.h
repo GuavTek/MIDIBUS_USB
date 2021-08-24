@@ -131,6 +131,7 @@ class MCP2517_C : SPI_C {
 		void Init();
 		static uint8_t Get_DLC(uint8_t dataLength);
 		static uint8_t Get_Data_Length(uint8_t DLC);
+		inline void Handler();
 	protected:
 		void Reset();
 		void Generate_CAN_ID();
@@ -271,6 +272,52 @@ void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	Send(&temp, 6);
 	while(Get_Status());
 	Select_Slave(false);
+}
+
+// Interrupt handler for CAN controller
+inline void MCP2517_C::Handler(){
+	if (com->SPI.INTFLAG.bit.DRE && com->SPI.INTENSET.bit.DRE) {
+		// Data register empty
+		if (currentState == Tx) {
+			com->SPI.DATA.reg = msgBuff[txIndex];
+		}
+		
+		txIndex++;
+		
+		if (txIndex >= msgLength) {
+			com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_DRE;
+			if (currentState == Tx) {
+				Select_Slave(false);
+				currentState = Idle;
+			}
+		} else if(currentState == Rx) {
+			if (txIndex <= 2){
+				// Send instruction and address bytes
+				com->SPI.DATA.reg = msgBuff[txIndex-1];
+			} else {
+				// Send dummy byte
+				com->SPI.DATA.reg = 0;		
+			}
+			
+		}
+	}
+	if (com->SPI.INTFLAG.bit.RXC && com->SPI.INTENSET.bit.RXC) {
+		if (currentState == Rx) {
+			msgBuff[rxIndex] = com->SPI.DATA.reg;
+		}
+		
+		rxIndex++;
+		
+		if (rxIndex >= msgLength) {
+			com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_RXC;
+			if (currentState == Rx) {
+				Select_Slave(false);
+				currentState = Rx_Ready;
+			}
+		}
+	}
+	
+	//NVIC_ClearPendingIRQ(SERCOM5_IRQn);
 }
 
 #endif /* MCP2517_H_ */
