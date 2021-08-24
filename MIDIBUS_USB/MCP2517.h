@@ -301,6 +301,7 @@ uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
 	}
 };
 
+// Write a word to CAN controller and block until done.
 void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	char temp[6];
 	temp[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
@@ -309,10 +310,9 @@ void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	temp[3] = (data >> 8) & 0xff;
 	temp[4] = (data >> 16) & 0xff;
 	temp[5] = (data >> 24) & 0xff;
-	while(Get_Status());
+	while(Get_Status() != Idle);
 	Select_Slave(true);
-	Send(&temp, 6);
-	while(Get_Status());
+	Send_Blocking(&temp, 6);
 	Select_Slave(false);
 }
 
