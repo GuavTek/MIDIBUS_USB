@@ -123,50 +123,14 @@ struct CAN_Rx_msg_t {
 	uint8_t dataLength;
 };
 
-uint8_t CAN_FD_Get_DLC(uint8_t dataLength){
-	switch(dataLength){
-		case 0:
-			return 0;
-		case 1:
-			return 1;
-		case 2:
-			return 2;
-		case 3:
-			return 3;
-		case 4:
-			return 4;
-		case 5:
-			return 5;
-		case 6:
-			return 6;
-		case 7:
-			return 7;
-		case 8:
-			return 8;
-		case 12:
-			return 9;
-		case 16:
-			return 10;
-		case 20:
-			return 11;
-		case 24:
-			return 12;
-		case 32:
-			return 13;
-		case 48:
-			return 14;
-		case 64:
-			return 15;
-		default:
-			return 255;
-	}
-}
+
 
 class MCP2517_C : SPI_C {
 	public:
 		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
 		void Init();
-		
+		static uint8_t Get_DLC(uint8_t dataLength);
+		static uint8_t Get_Data_Length(uint8_t DLC);
 	protected:
 		void Reset();
 		void Generate_CAN_ID();
@@ -207,6 +171,82 @@ void MCP2517_C::Init(){
 	temp |= 1 << 12;		// Disable bit-rate switching
 	temp |= 1 << 5;			// Use non-zero initial crc vector
 	Write_Word_Blocking(MCP2517_ADDR_E::C1CON, temp);
+}
+
+static uint8_t MCP2517_C::Get_DLC(uint8_t dataLength){
+	switch(dataLength){
+		case 0:
+			return 0;
+		case 1:
+			return 1;
+		case 2:
+			return 2;
+		case 3:
+			return 3;
+		case 4:
+			return 4;
+		case 5:
+			return 5;
+		case 6:
+			return 6;
+		case 7:
+			return 7;
+		case 8:
+			return 8;
+		case 12:
+			return 9;
+		case 16:
+			return 10;
+		case 20:
+			return 11;
+		case 24:
+			return 12;
+		case 32:
+			return 13;
+		case 48:
+			return 14;
+		case 64:
+			return 15;
+		default:
+			return 255;
+	}
+}
+
+static uint8_t MCP2517_C::Get_Data_Length(uint8_t DLC){
+	switch(DLC){
+		case 1:
+			return 1;
+		case 2:
+			return 2;
+		case 3:
+			return 3;
+		case 4:
+			return 4;
+		case 5:
+			return 5;
+		case 6:
+			return 6;
+		case 7:
+			return 7;
+		case 8:
+			return 8;
+		case 9:
+			return 12;
+		case 10:
+			return 16;
+		case 11:
+			return 20;
+		case 12:
+			return 24;
+		case 13:
+			return 32;
+		case 14:
+			return 48;
+		case 15:
+			return 64;
+		default:
+			return 0;
+	}
 }
 
 void MCP2517_C::Reset(){
