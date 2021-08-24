@@ -128,6 +128,8 @@ struct CAN_Rx_msg_t {
 class MCP2517_C : SPI_C {
 	public:
 		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
+		uint8_t Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length);
+		uint8_t Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length);
 		void Init();
 		static uint8_t Get_DLC(uint8_t dataLength);
 		static uint8_t Get_Data_Length(uint8_t DLC);
@@ -250,6 +252,8 @@ static uint8_t MCP2517_C::Get_Data_Length(uint8_t DLC){
 	}
 }
 
+
+// Reset the CAN controller
 void MCP2517_C::Reset(){
 	char temp[2] = {0,0};
 	while(Get_Status());
@@ -258,6 +262,44 @@ void MCP2517_C::Reset(){
 	while(Get_Status());
 	Select_Slave(false);
 }
+
+// Sends a number of bytes to the specified address of the MCP2517
+uint8_t MCP2517_C::Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length){
+	if (Get_Status() == Idle){
+		// Write buffer
+		msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
+		msgBuff[1] = addr & 0xff;
+		
+		for (uint8_t i = 0; i < length; i++){
+			msgBuff[i+2] = data[i];
+		}
+		
+		Select_Slave(true);
+		Send(length + 2);
+		
+		// Return success
+		return 1;
+	} else {
+		// Return not success
+		return 0;
+	}
+};
+
+// Reads a number of bytes from the specified address of the MCP2517
+uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
+	if (Get_Status() == Idle){
+		// Write buffer
+		msgBuff[0] = ((char) MCP2517_INSTR_E::Read << 4) | ((char) addr >> 8);
+		msgBuff[1] = addr & 0xff;
+		
+		Select_Slave(true);
+		Receive(length + 2);
+		
+		return 1;
+	} else {
+		return 0;
+	}
+};
 
 void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	char temp[6];
