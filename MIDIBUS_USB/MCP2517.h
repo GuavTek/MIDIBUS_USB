@@ -134,6 +134,7 @@ class MCP2517_C : SPI_C {
 	public:
 		void Init(uint8_t intPin);
 		inline void Set_Rx_Callback(void (*cb)(char*)){ Rx_Callback = cb; }
+		uint8_t Transmit_Message(char* data, uint8_t length);
 		inline void Handler();
 	protected:
 		void Reset();
@@ -149,6 +150,7 @@ class MCP2517_C : SPI_C {
 		inline uint16_t Get_FIFOCON_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOSTA_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOUA_Addr(uint8_t fifoNum);
+		void Send_Message_Object(uint16_t addr);
 		void FIFO_Increment(uint8_t fifoNum, uint8_t txRequest);
 		void FIFO_User_Address(uint8_t fifoNum);
 		void FIFO_Status(uint8_t fifoNum);
@@ -418,6 +420,43 @@ void MCP2517_C::FIFO_User_Address(uint8_t fifoNum){
 	uint16_t addr = Get_FIFOUA_Addr(fifoNum);
 	
 	Receive_Buffer((MCP2517_ADDR_E) addr, 4);
+}
+
+// Attempts to start a message transfer
+uint8_t MCP2517_C::Transmit_Message(char* data, uint8_t length){
+	if (msgState == Msg_Idle){
+		for (uint8_t i = 0; i < length; i++){
+			msgBuff[i+10] = data[i];
+		}
+	
+		payload = length;
+		
+		msgState = Msg_Tx_Addr;
+		FIFO_User_Address(2);
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+// Send the payload
+// Payload was loaded to buffer by Transmit_Message
+void MCP2517_C::Send_Message_Object(uint16_t addr){
+	msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
+	msgBuff[1] = addr & 0xff;
+		
+	msgBuff[2] = CANID & 0xff;
+	msgBuff[3] = (CANID >> 8) & 0x07;
+	msgBuff[4] = 0;
+	msgBuff[5] = 0;
+		
+	msgBuff[6] = (0b1000 << 4) | Get_DLC(payload);
+	msgBuff[7] = 0;
+	msgBuff[8] = 0;
+	msgBuff[9] = 0;
+		
+	Select_Slave(true);
+	Send(payload + 10);
 }
 
 // Request status info of FIFO
