@@ -132,18 +132,18 @@ struct CAN_Rx_msg_t {
 
 class MCP2517_C : SPI_C {
 	public:
-		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
-		uint8_t Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length);
-		uint8_t Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length);
-		static uint8_t Get_DLC(uint8_t dataLength);
-		static uint8_t Get_Data_Length(uint8_t DLC);
 		void Init(uint8_t intPin);
 		inline void Handler();
 	protected:
 		void Reset();
 		void Generate_CAN_ID();
+		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
+		uint8_t Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length);
+		uint8_t Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length);
 		void Check_Rx_Int();
 		void Check_Rx_RTC();
+		inline uint8_t Get_DLC(uint8_t dataLength);
+		inline uint8_t Get_Data_Length(uint8_t DLC);
 		inline uint16_t Get_FIFOCON_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOSTA_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOUA_Addr(uint8_t fifoNum);
