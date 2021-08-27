@@ -144,6 +144,9 @@ class MCP2517_C : SPI_C {
 		void Generate_CAN_ID();
 		void Check_Rx_Int();
 		void Check_Rx_RTC();
+		inline uint16_t Get_FIFOCON_Addr(uint8_t fifoNum);
+		inline uint16_t Get_FIFOSTA_Addr(uint8_t fifoNum);
+		inline uint16_t Get_FIFOUA_Addr(uint8_t fifoNum);
 		uint32_t CANID;
 };
 
@@ -259,6 +262,17 @@ static uint8_t MCP2517_C::Get_Data_Length(uint8_t DLC){
 	}
 }
 
+inline uint16_t MCP2517_C::Get_FIFOCON_Addr(uint8_t fifoNum){
+	return ((uint16_t) MCP2517_ADDR_E::C1TXQCON + (0xc * fifoNum));
+}
+
+inline uint16_t MCP2517_C::Get_FIFOSTA_Addr(uint8_t fifoNum){
+	return ((uint16_t) MCP2517_ADDR_E::C1TXQSTA + (0xc * fifoNum));
+}
+
+inline uint16_t MCP2517_C::Get_FIFOUA_Addr(uint8_t fifoNum){
+	return ((uint16_t) MCP2517_ADDR_E::C1TXQUA + (0xc * fifoNum));
+}
 
 // Reset the CAN controller
 void MCP2517_C::Reset(){
