@@ -142,6 +142,8 @@ class MCP2517_C : SPI_C {
 	protected:
 		void Reset();
 		void Generate_CAN_ID();
+		void Check_Rx_Int();
+		void Check_Rx_RTC();
 		uint32_t CANID;
 };
 
@@ -321,6 +323,24 @@ void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	Select_Slave(false);
 }
 
+
+// Checks MCP2517 interrupt pin
+void MCP2517_C::Check_Rx_Int(){
+	if (port_pin_get_input_level(interruptPin)){
+		msgState = Msg_Rx_Addr;
+		FIFO_User_Address(1);
+	}
+}
+
+// Check MCP2517 interrupt register every RTC tick
+void MCP2517_C::Check_Rx_RTC(){
+	static uint32_t count = 0;
+	if (count < RTC->MODE0.COUNT.reg){
+		msgState = Msg_Rx_Int;
+		count = RTC->MODE0.COUNT.reg;
+		FIFO_Status(1);
+	}
+}
 // Interrupt handler for CAN controller
 inline void MCP2517_C::Handler(){
 	if (com->SPI.INTFLAG.bit.DRE && com->SPI.INTENSET.bit.DRE) {
