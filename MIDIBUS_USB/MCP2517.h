@@ -133,6 +133,7 @@ struct CAN_Rx_msg_t {
 class MCP2517_C : SPI_C {
 	public:
 		void Init(uint8_t intPin);
+		inline void Set_Rx_Callback(void (*cb)(char*)){ Rx_Callback = cb; }
 		inline void Handler();
 	protected:
 		void Reset();
@@ -140,6 +141,7 @@ class MCP2517_C : SPI_C {
 		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
 		uint8_t Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length);
 		uint8_t Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length);
+		void (*Rx_Callback)(char*);
 		void Check_Rx_Int();
 		void Check_Rx_RTC();
 		inline uint8_t Get_DLC(uint8_t dataLength);
