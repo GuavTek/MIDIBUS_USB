@@ -135,9 +135,9 @@ class MCP2517_C : SPI_C {
 		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
 		uint8_t Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length);
 		uint8_t Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length);
-		void Init();
 		static uint8_t Get_DLC(uint8_t dataLength);
 		static uint8_t Get_Data_Length(uint8_t DLC);
+		void Init(uint8_t intPin);
 		inline void Handler();
 	protected:
 		void Reset();
@@ -150,16 +150,74 @@ class MCP2517_C : SPI_C {
 		uint32_t CANID;
 };
 
-void MCP2517_C::Init(){
+// Initializes the MCP2517 chip
+// CURRENTLY LOOPBACK MODE
+// intPin > 64 makes it use RTC to check RX
+void MCP2517_C::Init(uint8_t intPin){
 	Reset();
-	uint32_t temp = 0;
+	Generate_CAN_ID();
+	
+	interruptPin = intPin;
+	if (intPin < 64){
+		struct port_config intCon = {
+			.direction = PORT_PIN_DIR_INPUT,
+			.input_pull = PORT_PIN_PULL_NONE,
+			.powersave = false
+		};
+		port_pin_set_config(intPin, &intCon);
+	}
+	
+	
+	uint32_t temp;
+	
+	// Configure message filter 0
+	temp = 0;
+	temp |= 1 << 30;		// Match only standard ID
+	temp |= 0x7ff << 0;		// Mask for standard identifier
+	Write_Word_Blocking(MCP2517_ADDR_E::C1MASK0, temp);
 	
 	temp = 0;
-	temp |= 0b010 << 29;	// Payload size = 16 bytes
-	temp |= 0b00111 << 24;	// FIFO size = 8 messages
-	temp |= 0b11 << 21;		// Unlimited retransmission attempts
-	Write_Word_Blocking(MCP2517_ADDR_E::C1TXQCON, temp);
+	temp |= 0 << 30;		// Standard ID only
+	temp |= 1 << 10;		// Always 1 when this module is addressed
+	temp |= CANID & 0x3ff;	// Address
+	Write_Word_Blocking(MCP2517_ADDR_E::C1FLTOBJ0, temp);
 	
+	// Configure message filter 1
+	temp = 0;
+	temp |= 1 << 30;		// Match only standard ID
+	temp |= 1 << 10;		// Mask for standard identifier
+	Write_Word_Blocking(MCP2517_ADDR_E::C1MASK1, temp);
+	
+	temp = 0;
+	temp |= 0 << 30;		// Standard ID only
+	temp |= 0 << 10;		// All addresses starting with 0 are accepted
+	Write_Word_Blocking(MCP2517_ADDR_E::C1FLTOBJ1, temp);
+	
+	// Enable filters
+	temp = 0;
+	temp |= 1 << 15;		// Enable filter 1
+	temp |= 0b0001 << 8;	// Store in FIFO 1
+	temp |= 1 << 7;			// Enable filter 0
+	temp |= 0b0001 << 0;	// Store in FIFO 1
+	Write_Word_Blocking(MCP2517_ADDR_E::C1FLTCON0, temp);
+	
+	// Configure Rx FIFO 1
+	temp = 0;
+	temp |= 0b010 << 29;	// Payload size = 16 bytes
+	temp |= 0b11111 << 24;	// FIFO size = 32 messages
+	temp |= 0 << 7;			// FIFO is receive
+	temp |= 1 << 0;			// FIFO not empty interrupt enable
+	Write_Word_Blocking(MCP2517_ADDR_E::C1FIFOCON1, temp);
+	
+	// Configure Tx FIFO 2
+	temp = 0;
+	temp |= 0b010 << 29;	// Payload size = 16 bytes
+	temp |= 0b11111 << 24;	// FIFO size = 32 messages
+	temp |= 1 << 7;			// FIFO is transmit
+	temp |= 0b11 << 21;		// Unlimited retransmission attempts
+	Write_Word_Blocking(MCP2517_ADDR_E::C1FIFOCON2, temp);
+	
+	// Configure interrupts
 	temp = 0;
 	//temp |= 1 << 20;		// Tx event interrupt enable, Flag is in position 4
 	temp |= 1 << 17;		// Rx interrupt enable, Flag is in position 1
@@ -180,8 +238,9 @@ void MCP2517_C::Init(){
 	
 	temp = 0;
 	temp |= 0b0010 << 28;	// 4 cycle delay between transmissions
-	temp |= 0b000 << 24;	// Normal CAN FD mode
-	temp |= 1 << 12;		// Disable bit-rate switching
+	//temp |= 0b000 << 24;	// Normal CAN FD mode
+	temp |= 0b010 << 24;		// Internal loopback mode
+	temp |= 0 << 12;		// Enable bit-rate switching
 	temp |= 1 << 5;			// Use non-zero initial crc vector
 	Write_Word_Blocking(MCP2517_ADDR_E::C1CON, temp);
 }
