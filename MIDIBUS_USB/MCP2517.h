@@ -9,6 +9,8 @@
 #ifndef MCP2517_H_
 #define MCP2517_H_
 
+#include "SPI.h"
+
 enum class MCP2517_INSTR_E {
 	Reset			= 0b0000,
 	Read			= 0b0011,
@@ -258,7 +260,7 @@ void MCP2517_C::Init(uint8_t intPin){
 	Write_Word_Blocking(MCP2517_ADDR_E::C1CON, temp);
 }
 
-static uint8_t MCP2517_C::Get_DLC(uint8_t dataLength){
+inline uint8_t MCP2517_C::Get_DLC(uint8_t dataLength){
 	switch(dataLength){
 		case 0:
 			return 0;
@@ -297,7 +299,7 @@ static uint8_t MCP2517_C::Get_DLC(uint8_t dataLength){
 	}
 }
 
-static uint8_t MCP2517_C::Get_Data_Length(uint8_t DLC){
+inline uint8_t MCP2517_C::Get_Data_Length(uint8_t DLC){
 	switch(DLC){
 		case 1:
 			return 1;
@@ -349,10 +351,10 @@ inline uint16_t MCP2517_C::Get_FIFOUA_Addr(uint8_t fifoNum){
 // Reset the CAN controller
 void MCP2517_C::Reset(){
 	char temp[2] = {0,0};
-	while(Get_Status());
+	while(Get_Status() != Idle);
 	Select_Slave(true);
-	Send(&temp, 2);
-	while(Get_Status());
+	Send(temp, 2);
+	while(Get_Status() != Idle);
 	Select_Slave(false);
 }
 
@@ -361,7 +363,7 @@ uint8_t MCP2517_C::Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t len
 	if (Get_Status() == Idle){
 		// Write buffer
 		msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
-		msgBuff[1] = addr & 0xff;
+		msgBuff[1] = (uint8_t) addr & 0xff;
 		
 		for (uint8_t i = 0; i < length; i++){
 			msgBuff[i+2] = data[i];
@@ -383,7 +385,7 @@ uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
 	if (Get_Status() == Idle){
 		// Write buffer
 		msgBuff[0] = ((char) MCP2517_INSTR_E::Read << 4) | ((char) addr >> 8);
-		msgBuff[1] = addr & 0xff;
+		msgBuff[1] = (uint8_t) addr & 0xff;
 		
 		Select_Slave(true);
 		Receive(length + 2);
@@ -394,18 +396,18 @@ uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
 	}
 };
 
-// Write a word to CAN controller and block until done.
+// Write a word to CAN controller without interrupts.
 void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	char temp[6];
 	temp[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
-	temp[1] = addr & 0xff;
+	temp[1] = (uint8_t) addr & 0xff;
 	temp[2] = data & 0xff;
 	temp[3] = (data >> 8) & 0xff;
 	temp[4] = (data >> 16) & 0xff;
 	temp[5] = (data >> 24) & 0xff;
 	while(Get_Status() != Idle);
 	Select_Slave(true);
-	Send_Blocking(&temp, 6);
+	Send_Blocking(temp, 6);
 	Select_Slave(false);
 }
 
