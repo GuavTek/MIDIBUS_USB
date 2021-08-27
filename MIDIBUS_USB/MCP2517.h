@@ -149,7 +149,12 @@ class MCP2517_C : SPI_C {
 		inline uint16_t Get_FIFOCON_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOSTA_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOUA_Addr(uint8_t fifoNum);
+		uint8_t interruptPin;
 		uint32_t CANID;
+		uint8_t payload;
+		enum {Msg_Idle = 0,
+			Msg_Rx_Int, Msg_Rx_Addr, Msg_Rx_Data, Msg_Rx_FIFO,
+			Msg_Tx_Addr, Msg_Tx_Data, Msg_Tx_FIFO} msgState;
 };
 
 // Initializes the MCP2517 chip
