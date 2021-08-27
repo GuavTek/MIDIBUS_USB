@@ -135,6 +135,7 @@ class MCP2517_C : SPI_C {
 		void Init(uint8_t intPin);
 		inline void Set_Rx_Callback(void (*cb)(char*)){ Rx_Callback = cb; }
 		uint8_t Transmit_Message(char* data, uint8_t length);
+		void State_Machine();
 		inline void Handler();
 	protected:
 		void Reset();
@@ -483,6 +484,81 @@ void MCP2517_C::Check_Rx_RTC(){
 		FIFO_Status(1);
 	}
 }
+
+void MCP2517_C::State_Machine(){
+	switch(msgState){
+		case Msg_Idle:
+			if (interruptPin < 64){
+				Check_Rx_Int();
+			} else {
+				Check_Rx_RTC();
+			}
+			break;
+		case Msg_Rx_Int:
+			if (Get_Status() == Rx_Ready){
+				char temp[3];
+				Read_Buffer(temp);
+				if (temp[2] & 0x01){
+					// Message waiting in buffer
+					msgState = Msg_Rx_Addr;
+					FIFO_User_Address(1);
+				} else {
+					// No message
+					msgState = Msg_Idle;
+				}
+			}
+			break;
+		case Msg_Rx_Addr:
+			if (Get_Status() == Rx_Ready){
+				msgState = Msg_Tx_Data;
+				char temp[6];
+				Read_Buffer(temp);
+				
+				uint16_t addr = (temp[3] << 8) | temp[2];
+				Receive_Buffer((MCP2517_ADDR_E) addr, 24);
+			}
+			break;
+		case Msg_Rx_Data:
+			if (Get_Status() == Rx_Ready){
+				char buffer[26];
+				Read_Buffer(buffer);
+				
+				Rx_Callback(buffer);
+				msgState = Msg_Rx_FIFO;
+				FIFO_Increment(1, 0);
+			}
+			break;
+		case Msg_Rx_FIFO:
+			if (Get_Status() == Idle){
+				msgState = Msg_Idle;
+			}
+			break;
+		case Msg_Tx_Addr:
+			if (Get_Status() == Rx_Ready){
+				msgState = Msg_Tx_Data;
+				char temp[6];
+				Read_Buffer(temp);
+				
+				uint16_t addr = (temp[3] << 8) | temp[2];
+				Send_Message_Object(addr);
+			}
+			break;
+		case Msg_Tx_Data:
+			if (Get_Status() == Idle){
+				msgState = Msg_Tx_FIFO;
+				FIFO_Increment(2, 1);
+			}
+			break;
+		case Msg_Tx_FIFO:
+			if (Get_Status() == Idle){
+				msgState = Msg_Idle;
+			}
+			break;
+		default:
+			break;
+	}
+}
+
 // Interrupt handler for CAN controller
 inline void MCP2517_C::Handler(){
 	if (com->SPI.INTFLAG.bit.DRE && com->SPI.INTENSET.bit.DRE) {
