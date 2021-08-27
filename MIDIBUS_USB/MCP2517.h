@@ -149,6 +149,9 @@ class MCP2517_C : SPI_C {
 		inline uint16_t Get_FIFOCON_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOSTA_Addr(uint8_t fifoNum);
 		inline uint16_t Get_FIFOUA_Addr(uint8_t fifoNum);
+		void FIFO_Increment(uint8_t fifoNum, uint8_t txRequest);
+		void FIFO_User_Address(uint8_t fifoNum);
+		void FIFO_Status(uint8_t fifoNum);
 		uint8_t interruptPin;
 		uint32_t CANID;
 		uint8_t payload;
@@ -403,6 +406,26 @@ void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	Select_Slave(false);
 }
 
+void MCP2517_C::FIFO_Increment(uint8_t fifoNum, uint8_t txRequest){
+	uint16_t addr = Get_FIFOCON_Addr(fifoNum) + 1;
+		
+	char data = 1 | (txRequest << 1);
+	
+	Send_Buffer((MCP2517_ADDR_E) addr, &data, 1);
+}
+
+void MCP2517_C::FIFO_User_Address(uint8_t fifoNum){
+	uint16_t addr = Get_FIFOUA_Addr(fifoNum);
+	
+	Receive_Buffer((MCP2517_ADDR_E) addr, 4);
+}
+
+// Request status info of FIFO
+void MCP2517_C::FIFO_Status(uint8_t fifoNum){
+	uint16_t addr = Get_FIFOSTA_Addr(fifoNum);
+	
+	Receive_Buffer((MCP2517_ADDR_E) addr, 1);
+}
 
 // Checks MCP2517 interrupt pin
 void MCP2517_C::Check_Rx_Int(){
