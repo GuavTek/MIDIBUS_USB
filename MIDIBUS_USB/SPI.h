@@ -79,7 +79,7 @@ class SPI_C
 			//com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_RXC;
 		};
 	protected:
-		char msgBuff[20];
+		char msgBuff[30];
 		uint8_t msgLength;
 		uint8_t rxIndex;
 		uint8_t txIndex;
