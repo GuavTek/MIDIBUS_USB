@@ -10,6 +10,7 @@
 #include "sam.h"
 #include "asf.h"
 #include "MIDI_Driver.h"
+#include "MCP2517.h"
 #include "SPI.h"
 
 const spi_config_t SPI_CONF = {
@@ -25,20 +26,41 @@ const spi_config_t SPI_CONF = {
 
 MCP2517_C CAN(SERCOM5);
 
-void SERCOM5_Handler(){
-	SPI_TEST.Handler();
-}
+void CAN_Receive(char* data);
 
-MIDI_C MIDI_USB(2);
-MIDI_C MIDI_CAN(2);
+//MIDI_C MIDI_USB(2);
+//MIDI_C MIDI_CAN(2);
 
 int main(void)
 {
 	system_init();
-    /* Replace with your application code */
 	CAN.Init(0, SPI_CONF);
+	CAN.Set_Rx_Callback(CAN_Receive);
+	
+	PORT->Group[0].DIRSET.reg = (1 << 16) | (1 << 17);
+	PORT->Group[0].OUTSET.reg = 1 << 16;
+	
+	NVIC_EnableIRQ(SERCOM5_IRQn);
+	system_interrupt_enable_global();
+	
+	char temp[4];
+	temp[2] = 69;
+	CAN.Transmit_Message(temp, 4, 1);
+	
     while (1) 
     {
-		
+		CAN.State_Machine();
     }
+}
+
+void CAN_Receive(char* data){
+	if (data[2] == 69){
+		PORT->Group[0].OUTSET.reg = 1 << 17;
+	}
+}
+
+// For some reason the SERCOM5 interrupt leads to the SERCOM3 handler
+// That was a painful debugging session
+void SERCOM3_Handler(void){
+	CAN.Handler();
 }
