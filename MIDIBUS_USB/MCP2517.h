@@ -159,6 +159,7 @@ class MCP2517_C : SPI_C {
 		void FIFO_Status(uint8_t fifoNum);
 		uint8_t interruptPin;
 		uint32_t CANID;
+		bool broadcasting;
 		uint8_t payload;
 		enum {Msg_Idle = 0,
 			Msg_Rx_Int, Msg_Rx_Addr, Msg_Rx_Data, Msg_Rx_FIFO,
@@ -428,7 +429,7 @@ void MCP2517_C::FIFO_User_Address(uint8_t fifoNum){
 }
 
 // Attempts to start a message transfer
-uint8_t MCP2517_C::Transmit_Message(char* data, uint8_t length){
+uint8_t MCP2517_C::Transmit_Message(char* data, uint8_t length, bool broadcast){
 	if (msgState == Msg_Idle){
 		for (uint8_t i = 0; i < length; i++){
 			msgBuff[i+10] = data[i];
@@ -437,6 +438,7 @@ uint8_t MCP2517_C::Transmit_Message(char* data, uint8_t length){
 		payload = length;
 		
 		msgState = Msg_Tx_Addr;
+		broadcasting = broadcast;
 		FIFO_User_Address(2);
 		return 1;
 	} else {
@@ -451,7 +453,7 @@ void MCP2517_C::Send_Message_Object(uint16_t addr){
 	msgBuff[1] = addr & 0xff;
 		
 	msgBuff[2] = CANID & 0xff;
-	msgBuff[3] = (CANID >> 8) & 0x07;
+	msgBuff[3] = ((CANID >> 8) & 0b0011) | (broadcasting ? (1 << 2) : 0);
 	msgBuff[4] = 0;
 	msgBuff[5] = 0;
 		
