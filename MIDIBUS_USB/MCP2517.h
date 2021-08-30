@@ -136,7 +136,7 @@ class MCP2517_C : SPI_C {
 	public:
 		void Init(uint8_t intPin, const spi_config_t config);
 		inline void Set_Rx_Callback(void (*cb)(char*)){ Rx_Callback = cb; }
-		uint8_t Transmit_Message(char* data, uint8_t length);
+		uint8_t Transmit_Message(char* data, uint8_t length, bool broadcast);
 		void State_Machine();
 		inline void Handler();
 	protected:
