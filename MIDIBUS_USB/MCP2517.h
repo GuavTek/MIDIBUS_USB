@@ -167,8 +167,8 @@ class MCP2517_C : SPI_C {
 			Msg_Tx_Addr, Msg_Tx_Data, Msg_Tx_FIFO} msgState;
 };
 
+#warning CAN is set up in loopback mode
 // Initializes the MCP2517 chip
-// CURRENTLY LOOPBACK MODE
 // intPin > 64 makes it use RTC to check RX
 void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	SPI_C::Init(config);
@@ -352,6 +352,7 @@ inline uint16_t MCP2517_C::Get_FIFOUA_Addr(uint8_t fifoNum){
 	return ((uint16_t) MCP2517_ADDR_E::C1TXQUA + (0xc * fifoNum));
 }
 
+#warning Temporary CANID
 void MCP2517_C::Generate_CAN_ID(){
 	CANID = 69;
 }
