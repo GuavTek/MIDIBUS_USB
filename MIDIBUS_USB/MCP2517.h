@@ -139,6 +139,7 @@ class MCP2517_C : SPI_C {
 		uint8_t Transmit_Message(char* data, uint8_t length, bool broadcast);
 		void State_Machine();
 		inline void Handler();
+		using SPI_C::SPI_C;
 	protected:
 		void Reset();
 		void Generate_CAN_ID();
@@ -158,7 +159,7 @@ class MCP2517_C : SPI_C {
 		void FIFO_User_Address(uint8_t fifoNum);
 		void FIFO_Status(uint8_t fifoNum);
 		uint8_t interruptPin;
-		uint32_t CANID;
+		uint16_t CANID;
 		bool broadcasting;
 		uint8_t payload;
 		enum {Msg_Idle = 0,
