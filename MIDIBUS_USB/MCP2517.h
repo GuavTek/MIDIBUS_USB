@@ -361,7 +361,7 @@ void MCP2517_C::Reset(){
 	char temp[2] = {0,0};
 	while(Get_Status() != Idle);
 	Select_Slave(true);
-	Send(temp, 2);
+	Send_Blocking(temp, 2);
 	while(Get_Status() != Idle);
 	Select_Slave(false);
 }
