@@ -352,6 +352,10 @@ inline uint16_t MCP2517_C::Get_FIFOUA_Addr(uint8_t fifoNum){
 	return ((uint16_t) MCP2517_ADDR_E::C1TXQUA + (0xc * fifoNum));
 }
 
+void MCP2517_C::Generate_CAN_ID(){
+	CANID = 69;
+}
+
 // Reset the CAN controller
 void MCP2517_C::Reset(){
 	char temp[2] = {0,0};
