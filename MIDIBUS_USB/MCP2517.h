@@ -168,7 +168,9 @@ class MCP2517_C : SPI_C {
 // Initializes the MCP2517 chip
 // CURRENTLY LOOPBACK MODE
 // intPin > 64 makes it use RTC to check RX
-void MCP2517_C::Init(uint8_t intPin){
+void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
+	SPI_C::Init(config);
+	
 	Reset();
 	Generate_CAN_ID();
 	

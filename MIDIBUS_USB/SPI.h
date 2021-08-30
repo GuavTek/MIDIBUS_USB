@@ -36,48 +36,10 @@ class SPI_C
 		uint8_t Send(uint8_t length);
 		void Send_Blocking(char* buff, uint8_t length);
 		uint8_t Receive(uint8_t length);
+		void Init(const spi_config_t config);
 		inline void Handler();
-		SPI_C(Sercom* const SercomInstance, const spi_config_t config) : com(SercomInstance){
-			// Enable SERCOM clock
-			PM->APBCMASK.reg |= 1 << (PM_APBCMASK_SERCOM0_Pos + config.sercomNum);
-		
-			// Select generic clock
-			GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | ((GCLK_CLKCTRL_ID_SERCOM0_CORE_Val + config.sercomNum) << GCLK_CLKCTRL_ID_Pos);
-		
-			// Configure chip select pin
-			struct port_config chipSel = {
-				.direction = PORT_PIN_DIR_OUTPUT,
-				.input_pull = PORT_PIN_PULL_NONE,
-				.powersave = false
-			};
-			port_pin_set_config(config.pin_cs, &chipSel);
-			port_pin_set_output_level(config.pin_cs, true);
-			ssPin = config.pin_cs;
-		
-			// Select peripheral pin function
-			pin_set_peripheral_function(config.pinmux_miso);
-			pin_set_peripheral_function(config.pinmux_mosi);
-			pin_set_peripheral_function(config.pinmux_sck);
-
-			// Set master mode and pad configuration
-			com->SPI.CTRLA.reg = SERCOM_SPI_CTRLA_MODE_SPI_MASTER | SERCOM_SPI_CTRLA_DOPO(config.dopoVal)
-			| SERCOM_SPI_CTRLA_DIPO(config.dipoVal);
-		
-			// Enable Rx, enable hardware SS
-			while(com->SPI.SYNCBUSY.bit.CTRLB);
-			com->SPI.CTRLB.reg = SERCOM_SPI_CTRLB_RXEN;
-		
-			// Set baud rate
-			while(com->SPI.SYNCBUSY.bit.CTRLB);
-			com->SPI.BAUD.reg = (F_CPU/(2 * config.speed)) - 1;
-		
-			//Enable SPI
-			com->SPI.CTRLA.reg |= SERCOM_SPI_CTRLA_ENABLE;
-		
-			// Enable interrupt
-			while(com->SPI.SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE);
-			//com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_RXC;
-		};
+		SPI_C(Sercom* const SercomInstance) : com(SercomInstance){};
+			
 	protected:
 		char msgBuff[30];
 		uint8_t msgLength;
@@ -86,6 +48,58 @@ class SPI_C
 		enum {Idle = 0, Rx, Tx, Rx_Ready} currentState;
 		uint8_t ssPin;
 };
+
+void SPI_C::Init(const spi_config_t config){
+	//Setting the Software Reset bit to 1
+	com->SPI.CTRLA.bit.SWRST = 1;
+	while(com->SPI.CTRLA.bit.SWRST || com->SPI.SYNCBUSY.bit.SWRST);
+			
+	// Enable SERCOM clock
+	PM->APBCMASK.reg |= 1 << (PM_APBCMASK_SERCOM0_Pos + config.sercomNum);
+		
+	// Select generic clock
+	GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | ((GCLK_CLKCTRL_ID_SERCOM0_CORE_Val + config.sercomNum) << GCLK_CLKCTRL_ID_Pos);
+
+	// Configure chip select pin
+			
+	struct port_config chipSel = {
+		.direction = PORT_PIN_DIR_OUTPUT,
+		.input_pull = PORT_PIN_PULL_NONE,
+		.powersave = false
+	};
+	port_pin_set_config(config.pin_cs, &chipSel);
+	port_pin_set_output_level(config.pin_cs, true);
+	ssPin = config.pin_cs;
+		
+	// Select peripheral pin function
+	pin_set_peripheral_function(config.pinmux_miso);
+	pin_set_peripheral_function(config.pinmux_mosi);
+	pin_set_peripheral_function(config.pinmux_sck);
+
+	// Set master mode and pad configuration
+	com->SPI.CTRLA.reg = SERCOM_SPI_CTRLA_MODE_SPI_MASTER | SERCOM_SPI_CTRLA_DOPO(config.dopoVal)
+	| SERCOM_SPI_CTRLA_DIPO(config.dipoVal);
+		
+	// Enable Rx
+	while(com->SPI.SYNCBUSY.bit.CTRLB);
+	com->SPI.CTRLB.reg = SERCOM_SPI_CTRLB_RXEN;
+		
+	// Set baud rate
+	while(com->SPI.SYNCBUSY.bit.CTRLB);
+	com->SPI.BAUD.reg = (F_CPU/(2 * config.speed)) - 1;
+		
+	//Enable SPI
+	com->SPI.CTRLA.reg |= SERCOM_SPI_CTRLA_ENABLE;
+		
+	// Enable interrupt
+	while(com->SPI.SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE);
+	//com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_DRE | SERCOM_SPI_INTENSET_RXC;
+			
+	// Send dummy byte
+	com->SPI.DATA.reg = 69;
+	while(com->SPI.INTFLAG.bit.RXC == 0);
+	volatile uint8_t temp = com->SPI.DATA.reg;
+}
 
 // Reads the internal buffer of the object
 // Clears Rx_Ready state
@@ -137,6 +151,9 @@ void SPI_C::Send_Blocking(char* buff, uint8_t length){
 		
 		// Send byte
 		com->SPI.DATA.reg = buff[i];
+		
+		// Wait for transfer to complete
+		while(com->SPI.INTFLAG.bit.RXC == 0);
 	}
 }
 

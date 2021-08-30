@@ -23,7 +23,7 @@ const spi_config_t SPI_CONF = {
 	.pinmux_sck = PINMUX_PB03D_SERCOM5_PAD1
 };
 
-SPI_C SPI_TEST(SERCOM5, SPI_CONF);
+MCP2517_C CAN(SERCOM5);
 
 void SERCOM5_Handler(){
 	SPI_TEST.Handler();
@@ -36,6 +36,7 @@ int main(void)
 {
 	system_init();
     /* Replace with your application code */
+	CAN.Init(0, SPI_CONF);
     while (1) 
     {
 		
