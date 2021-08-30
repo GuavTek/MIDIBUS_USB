@@ -134,7 +134,7 @@ struct CAN_Rx_msg_t {
 
 class MCP2517_C : SPI_C {
 	public:
-		void Init(uint8_t intPin);
+		void Init(uint8_t intPin, const spi_config_t config);
 		inline void Set_Rx_Callback(void (*cb)(char*)){ Rx_Callback = cb; }
 		uint8_t Transmit_Message(char* data, uint8_t length);
 		void State_Machine();
