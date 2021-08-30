@@ -514,7 +514,7 @@ void MCP2517_C::State_Machine(){
 			break;
 		case Msg_Rx_Addr:
 			if (Get_Status() == Rx_Ready){
-				msgState = Msg_Tx_Data;
+				msgState = Msg_Rx_Data;
 				char temp[6];
 				Read_Buffer(temp);
 				
