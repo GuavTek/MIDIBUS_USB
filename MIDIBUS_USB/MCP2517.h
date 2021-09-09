@@ -190,6 +190,16 @@ void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	
 	
 	uint32_t temp;
+	temp = 0;
+	temp |= 1 << 27;		// Abort all pending transmissions
+	temp |= 0b100 << 24;	// Request config mode
+	
+	// Wait for config mode
+	do {
+		temp = Receive_Word_Blocking(ADDR_E::C1CON);
+	} while ((temp & (0b111 << 21)) != (0b100 << 21));
+	
+	
 	
 	// Configure message filter 1
 	temp = 0;
@@ -264,6 +274,12 @@ void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	temp |= 0 << 12;		// Enable bit-rate switching
 	temp |= 1 << 5;			// Use non-zero initial crc vector
 	Write_Word_Blocking(ADDR_E::C1CON, temp);
+	
+	// Wait for chosen mode
+	do {
+		temp = Receive_Word_Blocking(ADDR_E::C1CON);
+	} while ((temp & (0b111 << 21)) != (0b010 << 21));
+	
 }
 
 inline uint8_t MCP2517_C::Get_DLC(uint8_t dataLength){
