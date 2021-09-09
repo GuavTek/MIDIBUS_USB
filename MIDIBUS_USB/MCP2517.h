@@ -527,7 +527,6 @@ void MCP2517_C::State_Machine(){
 				Read_Buffer(temp);
 				
 				uint16_t addr = (temp[3] << 8) | temp[2];
-				Receive_Buffer((MCP2517_ADDR_E) addr, 24);
 				addr += (uint16_t) ADDR_E::RAM_START;
 				Receive_Buffer((ADDR_E) addr, 26);
 			}
