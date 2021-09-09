@@ -536,7 +536,7 @@ void MCP2517_C::State_Machine(){
 				char buffer[26];
 				Read_Buffer(buffer);
 				
-				Rx_Callback(&buffer[2]);
+				Rx_Callback(&buffer[10]);
 				msgState = Msg_Rx_FIFO;
 				FIFO_Increment(1, 0);
 			}
