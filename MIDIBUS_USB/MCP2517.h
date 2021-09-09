@@ -481,7 +481,7 @@ void MCP2517_C::FIFO_Status(uint8_t fifoNum){
 
 // Checks MCP2517 interrupt pin
 void MCP2517_C::Check_Rx_Int(){
-	if (port_pin_get_input_level(interruptPin)){
+	if (!port_pin_get_input_level(interruptPin)){
 		msgState = Msg_Rx_Addr;
 		FIFO_User_Address(1);
 	}
