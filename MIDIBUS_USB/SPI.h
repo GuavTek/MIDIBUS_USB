@@ -97,6 +97,7 @@ void SPI_C::Init(const spi_config_t config){
 	
 	// Send dummy byte
 	com->SPI.DATA.reg = 69;
+	// Wait for transfer to complete
 	while(com->SPI.INTFLAG.bit.RXC == 0);
 	volatile uint8_t temp = com->SPI.DATA.reg;
 }
