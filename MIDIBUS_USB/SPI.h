@@ -78,7 +78,7 @@ void SPI_C::Init(const spi_config_t config){
 
 	// Set master mode and pad configuration
 	com->SPI.CTRLA.reg = SERCOM_SPI_CTRLA_MODE_SPI_MASTER | SERCOM_SPI_CTRLA_DOPO(config.dopoVal)
-	| SERCOM_SPI_CTRLA_DIPO(config.dipoVal);
+	| SERCOM_SPI_CTRLA_DIPO(config.dipoVal) | SERCOM_SPI_CTRLA_MODE(0x0);
 		
 	// Enable Rx
 	while(com->SPI.SYNCBUSY.bit.CTRLB);
