@@ -431,7 +431,7 @@ void MCP2517_C::FIFO_Increment(uint8_t fifoNum, uint8_t txRequest){
 void MCP2517_C::FIFO_User_Address(uint8_t fifoNum){
 	uint16_t addr = Get_FIFOUA_Addr(fifoNum);
 	
-	Receive_Buffer((MCP2517_ADDR_E) addr, 4);
+	Receive_Buffer((ADDR_E) addr, 2);
 }
 
 // Attempts to start a message transfer
@@ -523,11 +523,13 @@ void MCP2517_C::State_Machine(){
 		case Msg_Rx_Addr:
 			if (Get_Status() == Rx_Ready){
 				msgState = Msg_Rx_Data;
-				char temp[6];
+				char temp[4];
 				Read_Buffer(temp);
 				
 				uint16_t addr = (temp[3] << 8) | temp[2];
 				Receive_Buffer((MCP2517_ADDR_E) addr, 24);
+				addr += (uint16_t) ADDR_E::RAM_START;
+				Receive_Buffer((ADDR_E) addr, 26);
 			}
 			break;
 		case Msg_Rx_Data:
@@ -548,10 +550,11 @@ void MCP2517_C::State_Machine(){
 		case Msg_Tx_Addr:
 			if (Get_Status() == Rx_Ready){
 				msgState = Msg_Tx_Data;
-				char temp[6];
+				char temp[4];
 				Read_Buffer(temp);
 				
 				uint16_t addr = (temp[3] << 8) | temp[2];
+				addr += (uint16_t) ADDR_E::RAM_START;
 				Send_Message_Object(addr);
 			}
 			break;
