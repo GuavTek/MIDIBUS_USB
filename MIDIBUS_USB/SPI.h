@@ -93,8 +93,8 @@ void SPI_C::Init(const spi_config_t config){
 		
 	// Enable interrupt
 	while(com->SPI.SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE);
-	//com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_DRE | SERCOM_SPI_INTENSET_RXC;
-			
+	com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_RXC;
+	
 	// Send dummy byte
 	com->SPI.DATA.reg = 69;
 	while(com->SPI.INTFLAG.bit.RXC == 0);
@@ -124,7 +124,7 @@ uint8_t SPI_C::Send(char* buff, uint8_t length){
 		for (uint8_t i = 0; i < length; i++) {
 			msgBuff[i] = buff[i];
 		}
-		com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_DRE;
+		com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_RXC | SERCOM_SPI_INTENSET_DRE;
 		return 1;
 	}
 	
@@ -137,7 +137,7 @@ uint8_t SPI_C::Send(uint8_t length){
 		currentState = Tx;
 		msgLength = length;
 		txIndex = 0;
-		com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_DRE;
+		com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_RXC | SERCOM_SPI_INTENSET_DRE;
 		return 1;
 	}
 	

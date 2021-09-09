@@ -606,17 +606,13 @@ inline void MCP2517_C::Handler(){
 	}
 	if (com->SPI.INTFLAG.bit.RXC && com->SPI.INTENSET.bit.RXC) {
 		if (currentState == Rx) {
-			msgBuff[rxIndex] = com->SPI.DATA.reg;
-		}
-		
-		rxIndex++;
-		
-		if (rxIndex >= msgLength) {
-			com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_RXC;
-			if (currentState == Rx) {
+			msgBuff[rxIndex++] = com->SPI.DATA.reg;
+			if (rxIndex >= msgLength) {
 				Select_Slave(false);
 				currentState = Rx_Ready;
 			}
+		} else {
+			volatile uint8_t dumdum = com->SPI.DATA.reg;
 		}
 	}
 	
