@@ -359,10 +359,10 @@ void MCP2517_C::Generate_CAN_ID(){
 
 // Reset the CAN controller
 void MCP2517_C::Reset(){
-	char temp[2] = {0,0};
+	char temp[4] = {0,0,0,0};
 	while(Get_Status() != Idle);
 	Select_Slave(true);
-	Send_Blocking(temp, 2);
+	Transfer_Blocking(temp, 4);
 	while(Get_Status() != Idle);
 	Select_Slave(false);
 }
