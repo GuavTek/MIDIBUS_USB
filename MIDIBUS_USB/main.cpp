@@ -61,6 +61,6 @@ void CAN_Receive(char* data){
 
 // For some reason the SERCOM5 interrupt leads to the SERCOM3 handler
 // That was a painful debugging session
-void SERCOM3_Handler(void){
+void SERCOM5_Handler(void){
 	CAN.Handler();
 }
