@@ -371,7 +371,7 @@ void MCP2517_C::Reset(){
 uint8_t MCP2517_C::Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length){
 	if (Get_Status() == Idle){
 		// Write buffer
-		msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
+		msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((uint16_t) addr >> 8);
 		msgBuff[1] = (uint8_t) addr & 0xff;
 		
 		for (uint8_t i = 0; i < length; i++){
@@ -393,7 +393,7 @@ uint8_t MCP2517_C::Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t len
 uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
 	if (Get_Status() == Idle){
 		// Write buffer
-		msgBuff[0] = ((char) MCP2517_INSTR_E::Read << 4) | ((char) addr >> 8);
+		msgBuff[0] = ((char) MCP2517_INSTR_E::Read << 4) | ((uint16_t) addr >> 8);
 		msgBuff[1] = (uint8_t) addr & 0xff;
 		
 		Select_Slave(true);
@@ -408,7 +408,7 @@ uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
 // Write a word to CAN controller without interrupts.
 void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	char temp[6];
-	temp[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
+	temp[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((uint16_t) addr >> 8);
 	temp[1] = (uint8_t) addr & 0xff;
 	temp[2] = data & 0xff;
 	temp[3] = (data >> 8) & 0xff;
@@ -455,7 +455,7 @@ uint8_t MCP2517_C::Transmit_Message(char* data, uint8_t length, bool broadcast){
 // Send the payload
 // Payload was loaded to buffer by Transmit_Message
 void MCP2517_C::Send_Message_Object(uint16_t addr){
-	msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((char) addr >> 8);
+	msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((uint16_t) addr >> 8);
 	msgBuff[1] = addr & 0xff;
 		
 	msgBuff[2] = CANID & 0xff;
