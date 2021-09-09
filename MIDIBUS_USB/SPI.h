@@ -172,10 +172,16 @@ uint8_t SPI_C::Receive(uint8_t length){
 
 // SPI interrupt handler
 inline void SPI_C::Handler(){
+	if (com->SPI.INTFLAG.bit.TXC && com->SPI.INTENSET.bit.TXC) {
+		com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_TXC;
+		currentState = Idle;	// Transmission end
+	}
 	if (com->SPI.INTFLAG.bit.DRE && com->SPI.INTENSET.bit.DRE) {
 		// Data register empty
 		if (currentState == Tx) {
 			com->SPI.DATA.reg = msgBuff[txIndex];
+		} else if(currentState == Rx) {
+			com->SPI.DATA.reg = 0;		// Send dummy byte
 		}
 		
 		txIndex++;
@@ -183,25 +189,20 @@ inline void SPI_C::Handler(){
 		if (txIndex >= msgLength) {
 			com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_DRE;
 			if (currentState == Tx) {
-				currentState = Idle;
+				com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_TXC;	// Wait for transmission complete
+				com->SPI.INTFLAG.reg = SERCOM_SPI_INTFLAG_TXC;	// Clear flag
 			}
-		} else if(currentState == Rx) {
-			com->SPI.DATA.reg = 0;		// Send dummy byte
 		}
 	}
 	if (com->SPI.INTFLAG.bit.RXC && com->SPI.INTENSET.bit.RXC) {
 		if (currentState == Rx) {
-			msgBuff[rxIndex] = com->SPI.DATA.reg;
-		}
-		
-		rxIndex++;
-		
-		if (rxIndex >= msgLength) {
-			com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_RXC;
-			if (currentState == Rx) {
+			msgBuff[rxIndex++] = com->SPI.DATA.reg;
+			if (rxIndex >= msgLength) {
 				currentState = Rx_Ready;
 			}
-		}
+		} else {
+			volatile uint8_t dumdum = com->SPI.DATA.reg;
+		}	
 	}
 	
 	//NVIC_ClearPendingIRQ(SERCOM5_IRQn);
