@@ -416,7 +416,7 @@ void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
 	temp[5] = (data >> 24) & 0xff;
 	while(Get_Status() != Idle);
 	Select_Slave(true);
-	Send_Blocking(temp, 6);
+	Transfer_Blocking(temp, 6);
 	Select_Slave(false);
 }
 

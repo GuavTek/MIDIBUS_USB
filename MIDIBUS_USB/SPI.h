@@ -34,7 +34,7 @@ class SPI_C
 		uint8_t Read_Buffer(char* buff);
 		uint8_t Send(char* buff, uint8_t length);
 		uint8_t Send(uint8_t length);
-		void Send_Blocking(char* buff, uint8_t length);
+		void Transfer_Blocking(char* buff, uint8_t length);
 		uint8_t Receive(uint8_t length);
 		void Init(const spi_config_t config);
 		inline void Handler();
@@ -144,7 +144,7 @@ uint8_t SPI_C::Send(uint8_t length){
 	return 0;
 }
 
-void SPI_C::Send_Blocking(char* buff, uint8_t length){
+void SPI_C::Transfer_Blocking(char* buff, uint8_t length){
 	for (uint8_t i = 0; i < length; i++) {
 		// Wait for data register to be empty
 		while (com->SPI.INTFLAG.bit.DRE == 0);
@@ -154,6 +154,8 @@ void SPI_C::Send_Blocking(char* buff, uint8_t length){
 		
 		// Wait for transfer to complete
 		while(com->SPI.INTFLAG.bit.RXC == 0);
+		
+		buff[i] = com->SPI.DATA.reg;
 	}
 }
 
