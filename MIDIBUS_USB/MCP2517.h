@@ -573,6 +573,12 @@ void MCP2517_C::State_Machine(){
 
 // Interrupt handler for CAN controller
 inline void MCP2517_C::Handler(){
+	if (com->SPI.INTFLAG.bit.TXC && com->SPI.INTENSET.bit.TXC) {
+		com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_TXC;
+		// End transmission
+		Select_Slave(false);
+		currentState = Idle;
+	}
 	if (com->SPI.INTFLAG.bit.DRE && com->SPI.INTENSET.bit.DRE) {
 		// Data register empty
 		if (currentState == Tx) {
@@ -584,8 +590,8 @@ inline void MCP2517_C::Handler(){
 		if (txIndex >= msgLength) {
 			com->SPI.INTENCLR.reg = SERCOM_SPI_INTENCLR_DRE;
 			if (currentState == Tx) {
-				Select_Slave(false);
-				currentState = Idle;
+				com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_TXC;	// Wait for transmission complete
+				com->SPI.INTFLAG.reg = SERCOM_SPI_INTENSET_TXC;		// Clear flag
 			}
 		} else if(currentState == Rx) {
 			if (txIndex <= 2){
