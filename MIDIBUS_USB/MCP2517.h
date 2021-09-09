@@ -95,6 +95,7 @@ class MCP2517_C : SPI_C {
 		void Reset();
 		void Generate_CAN_ID();
 		void Write_Word_Blocking(enum ADDR_E addr, uint32_t data);
+		uint32_t Receive_Word_Blocking(enum ADDR_E addr);
 		uint8_t Send_Buffer(enum ADDR_E addr, char* data, uint8_t length);
 		uint8_t Receive_Buffer(enum ADDR_E addr, uint8_t length);
 		void (*Rx_Callback)(char*);
@@ -419,6 +420,18 @@ void MCP2517_C::Write_Word_Blocking(enum ADDR_E addr, uint32_t data){
 	Select_Slave(true);
 	Transfer_Blocking(temp, 6);
 	Select_Slave(false);
+}
+
+uint32_t MCP2517_C::Receive_Word_Blocking(enum ADDR_E addr){
+	char temp[10];
+	temp[0] = ((char) MCP2517_INSTR_E::Read << 4) | ((uint16_t) addr >> 8);
+	temp[1] = (uint8_t) addr & 0xff;
+	while(Get_Status() != Idle);
+	Select_Slave(true);
+	Transfer_Blocking(temp, 10);
+	Select_Slave(false);
+	uint32_t result = temp[2] | (temp[3] << 8) | (temp[4] << 16) | (temp[5] << 24);
+	return result;
 }
 
 void MCP2517_C::FIFO_Increment(uint8_t fifoNum, uint8_t txRequest){
