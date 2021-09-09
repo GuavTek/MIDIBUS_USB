@@ -66,7 +66,59 @@ enum class MCP2517_ICODE_E {
 	TxAttempt = 0x8a
 };
 
-enum class MCP2517_ADDR_E {
+// C1TREX transmit request
+// C1RXIF receive interrupt pending register
+// C1TREC and C1BDIAG for debugging
+// C1TXCON transmit queue control
+// C1TXQUA read transmit queue head
+
+struct CAN_Rx_msg_t {
+	uint32_t id;
+	uint8_t filterHit;
+	bool errorStatus;
+	bool idExtend;
+	uint8_t dataLength;
+};
+
+
+
+class MCP2517_C : SPI_C {
+	public:
+		void Init(uint8_t intPin, const spi_config_t config);
+		inline void Set_Rx_Callback(void (*cb)(char*)){ Rx_Callback = cb; }
+		uint8_t Transmit_Message(char* data, uint8_t length, bool broadcast);
+		void State_Machine();
+		inline void Handler();
+		enum ADDR_E : uint16_t;
+		using SPI_C::SPI_C;
+	protected:
+		void Reset();
+		void Generate_CAN_ID();
+		void Write_Word_Blocking(enum ADDR_E addr, uint32_t data);
+		uint8_t Send_Buffer(enum ADDR_E addr, char* data, uint8_t length);
+		uint8_t Receive_Buffer(enum ADDR_E addr, uint8_t length);
+		void (*Rx_Callback)(char*);
+		void Check_Rx_Int();
+		void Check_Rx_RTC();
+		inline uint8_t Get_DLC(uint8_t dataLength);
+		inline uint8_t Get_Data_Length(uint8_t DLC);
+		inline uint16_t Get_FIFOCON_Addr(uint8_t fifoNum);
+		inline uint16_t Get_FIFOSTA_Addr(uint8_t fifoNum);
+		inline uint16_t Get_FIFOUA_Addr(uint8_t fifoNum);
+		void Send_Message_Object(uint16_t addr);
+		void FIFO_Increment(uint8_t fifoNum, uint8_t txRequest);
+		void FIFO_User_Address(uint8_t fifoNum);
+		void FIFO_Status(uint8_t fifoNum);
+		uint8_t interruptPin;
+		uint16_t CANID;
+		bool broadcasting;
+		uint8_t payload;
+		enum {Msg_Idle = 0,
+			Msg_Rx_Int, Msg_Rx_Addr, Msg_Rx_Data, Msg_Rx_FIFO,
+			Msg_Tx_Addr, Msg_Tx_Data, Msg_Tx_FIFO} msgState;
+};
+
+enum MCP2517_C::ADDR_E : uint16_t {
 	C1CON			= 0x000,
 	C1NBTCFG		= 0x004,
 	C1DBTCFG		= 0x008,
@@ -116,57 +168,6 @@ enum class MCP2517_ADDR_E {
 	ECCSTAT			= 0xe10
 };
 
-// C1TREX transmit request
-// C1RXIF receive interrupt pending register
-// C1TREC and C1BDIAG for debugging
-// C1TXCON transmit queue control
-// C1TXQUA read transmit queue head
-
-struct CAN_Rx_msg_t {
-	uint32_t id;
-	uint8_t filterHit;
-	bool errorStatus;
-	bool idExtend;
-	uint8_t dataLength;
-};
-
-
-
-class MCP2517_C : SPI_C {
-	public:
-		void Init(uint8_t intPin, const spi_config_t config);
-		inline void Set_Rx_Callback(void (*cb)(char*)){ Rx_Callback = cb; }
-		uint8_t Transmit_Message(char* data, uint8_t length, bool broadcast);
-		void State_Machine();
-		inline void Handler();
-		using SPI_C::SPI_C;
-	protected:
-		void Reset();
-		void Generate_CAN_ID();
-		void Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data);
-		uint8_t Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length);
-		uint8_t Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length);
-		void (*Rx_Callback)(char*);
-		void Check_Rx_Int();
-		void Check_Rx_RTC();
-		inline uint8_t Get_DLC(uint8_t dataLength);
-		inline uint8_t Get_Data_Length(uint8_t DLC);
-		inline uint16_t Get_FIFOCON_Addr(uint8_t fifoNum);
-		inline uint16_t Get_FIFOSTA_Addr(uint8_t fifoNum);
-		inline uint16_t Get_FIFOUA_Addr(uint8_t fifoNum);
-		void Send_Message_Object(uint16_t addr);
-		void FIFO_Increment(uint8_t fifoNum, uint8_t txRequest);
-		void FIFO_User_Address(uint8_t fifoNum);
-		void FIFO_Status(uint8_t fifoNum);
-		uint8_t interruptPin;
-		uint16_t CANID;
-		bool broadcasting;
-		uint8_t payload;
-		enum {Msg_Idle = 0,
-			Msg_Rx_Int, Msg_Rx_Addr, Msg_Rx_Data, Msg_Rx_FIFO,
-			Msg_Tx_Addr, Msg_Tx_Data, Msg_Tx_FIFO} msgState;
-};
-
 #warning CAN is set up in loopback mode
 // Initializes the MCP2517 chip
 // intPin > 64 makes it use RTC to check RX
@@ -189,28 +190,28 @@ void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	
 	uint32_t temp;
 	
-	// Configure message filter 0
+	// Configure message filter 1
 	temp = 0;
 	temp |= 1 << 30;		// Match only standard ID
 	temp |= 0x7ff << 0;		// Mask for standard identifier
-	Write_Word_Blocking(MCP2517_ADDR_E::C1MASK0, temp);
+	Write_Word_Blocking(ADDR_E::C1MASK1, temp);
 	
 	temp = 0;
 	temp |= 0 << 30;		// Standard ID only
 	temp |= 1 << 10;		// Always 1 when this module is addressed
 	temp |= CANID & 0x3ff;	// Address
-	Write_Word_Blocking(MCP2517_ADDR_E::C1FLTOBJ0, temp);
+	Write_Word_Blocking(ADDR_E::C1FLTOBJ1, temp);
 	
-	// Configure message filter 1
+	// Configure message filter 0
 	temp = 0;
 	temp |= 1 << 30;		// Match only standard ID
 	temp |= 1 << 10;		// Mask for standard identifier
-	Write_Word_Blocking(MCP2517_ADDR_E::C1MASK1, temp);
+	Write_Word_Blocking(ADDR_E::C1MASK0, temp);
 	
 	temp = 0;
 	temp |= 0 << 30;		// Standard ID only
 	temp |= 0 << 10;		// All addresses starting with 0 are accepted
-	Write_Word_Blocking(MCP2517_ADDR_E::C1FLTOBJ1, temp);
+	Write_Word_Blocking(ADDR_E::C1FLTOBJ0, temp);
 	
 	// Enable filters
 	temp = 0;
@@ -218,7 +219,7 @@ void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	temp |= 0b0001 << 8;	// Store in FIFO 1
 	temp |= 1 << 7;			// Enable filter 0
 	temp |= 0b0001 << 0;	// Store in FIFO 1
-	Write_Word_Blocking(MCP2517_ADDR_E::C1FLTCON0, temp);
+	Write_Word_Blocking(ADDR_E::C1FLTCON0, temp);
 	
 	// Configure Rx FIFO 1
 	temp = 0;
@@ -226,7 +227,7 @@ void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	temp |= 0b11111 << 24;	// FIFO size = 32 messages
 	temp |= 0 << 7;			// FIFO is receive
 	temp |= 1 << 0;			// FIFO not empty interrupt enable
-	Write_Word_Blocking(MCP2517_ADDR_E::C1FIFOCON1, temp);
+	Write_Word_Blocking(ADDR_E::C1FIFOCON1, temp);
 	
 	// Configure Tx FIFO 2
 	temp = 0;
@@ -234,26 +235,26 @@ void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	temp |= 0b11111 << 24;	// FIFO size = 32 messages
 	temp |= 1 << 7;			// FIFO is transmit
 	temp |= 0b11 << 21;		// Unlimited retransmission attempts
-	Write_Word_Blocking(MCP2517_ADDR_E::C1FIFOCON2, temp);
+	Write_Word_Blocking(ADDR_E::C1FIFOCON2, temp);
 	
 	// Configure interrupts
 	temp = 0;
 	//temp |= 1 << 20;		// Tx event interrupt enable, Flag is in position 4
 	temp |= 1 << 17;		// Rx interrupt enable, Flag is in position 1
-	Write_Word_Blocking(MCP2517_ADDR_E::C1INT, temp);
+	Write_Word_Blocking(ADDR_E::C1INT, temp);
 	
 	temp = 0;
 	temp |= 1 << 25;		// Enable edge filtering
 	temp |= 0b11 << 16;		// Auto delay compensation
-	Write_Word_Blocking(MCP2517_ADDR_E::C1TDC, temp);
+	Write_Word_Blocking(ADDR_E::C1TDC, temp);
 	
 	temp = 0;
 	temp |= 0x01 << 24;		// Time quanta prescaler Tq = 2/20MHz = 100ns
 	temp |= 0x05 << 16;		// Time segment 1 = 6 Tq
 	temp |= 0x02 << 8;		// Time segment 2 = 3 Tq
 	temp |= 0x00;			// Sync jump width = 1 Tq
-	Write_Word_Blocking(MCP2517_ADDR_E::C1NBTCFG, temp);
-	Write_Word_Blocking(MCP2517_ADDR_E::C1DBTCFG, temp);
+	Write_Word_Blocking(ADDR_E::C1NBTCFG, temp);
+	Write_Word_Blocking(ADDR_E::C1DBTCFG, temp);
 	
 	temp = 0;
 	temp |= 0b0010 << 28;	// 4 cycle delay between transmissions
@@ -261,7 +262,7 @@ void MCP2517_C::Init(uint8_t intPin, const spi_config_t config){
 	temp |= 0b010 << 24;		// Internal loopback mode
 	temp |= 0 << 12;		// Enable bit-rate switching
 	temp |= 1 << 5;			// Use non-zero initial crc vector
-	Write_Word_Blocking(MCP2517_ADDR_E::C1CON, temp);
+	Write_Word_Blocking(ADDR_E::C1CON, temp);
 }
 
 inline uint8_t MCP2517_C::Get_DLC(uint8_t dataLength){
@@ -341,15 +342,15 @@ inline uint8_t MCP2517_C::Get_Data_Length(uint8_t DLC){
 }
 
 inline uint16_t MCP2517_C::Get_FIFOCON_Addr(uint8_t fifoNum){
-	return ((uint16_t) MCP2517_ADDR_E::C1TXQCON + (0xc * fifoNum));
+	return ((uint16_t) ADDR_E::C1TXQCON + (0xc * fifoNum));
 }
 
 inline uint16_t MCP2517_C::Get_FIFOSTA_Addr(uint8_t fifoNum){
-	return ((uint16_t) MCP2517_ADDR_E::C1TXQSTA + (0xc * fifoNum));
+	return ((uint16_t) ADDR_E::C1TXQSTA + (0xc * fifoNum));
 }
 
 inline uint16_t MCP2517_C::Get_FIFOUA_Addr(uint8_t fifoNum){
-	return ((uint16_t) MCP2517_ADDR_E::C1TXQUA + (0xc * fifoNum));
+	return ((uint16_t) ADDR_E::C1TXQUA + (0xc * fifoNum));
 }
 
 #warning Temporary CANID
@@ -368,7 +369,7 @@ void MCP2517_C::Reset(){
 }
 
 // Sends a number of bytes to the specified address of the MCP2517
-uint8_t MCP2517_C::Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t length){
+uint8_t MCP2517_C::Send_Buffer(enum ADDR_E addr, char* data, uint8_t length){
 	if (Get_Status() == Idle){
 		// Write buffer
 		msgBuff[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((uint16_t) addr >> 8);
@@ -390,7 +391,7 @@ uint8_t MCP2517_C::Send_Buffer(enum MCP2517_ADDR_E addr, char* data, uint8_t len
 };
 
 // Reads a number of bytes from the specified address of the MCP2517
-uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
+uint8_t MCP2517_C::Receive_Buffer(enum ADDR_E addr, uint8_t length){
 	if (Get_Status() == Idle){
 		// Write buffer
 		msgBuff[0] = ((char) MCP2517_INSTR_E::Read << 4) | ((uint16_t) addr >> 8);
@@ -406,7 +407,7 @@ uint8_t MCP2517_C::Receive_Buffer(enum MCP2517_ADDR_E addr, uint8_t length){
 };
 
 // Write a word to CAN controller without interrupts.
-void MCP2517_C::Write_Word_Blocking(enum MCP2517_ADDR_E addr, uint32_t data){
+void MCP2517_C::Write_Word_Blocking(enum ADDR_E addr, uint32_t data){
 	char temp[6];
 	temp[0] = ((char) MCP2517_INSTR_E::Write << 4) | ((uint16_t) addr >> 8);
 	temp[1] = (uint8_t) addr & 0xff;
@@ -425,7 +426,7 @@ void MCP2517_C::FIFO_Increment(uint8_t fifoNum, uint8_t txRequest){
 		
 	char data = 1 | (txRequest << 1);
 	
-	Send_Buffer((MCP2517_ADDR_E) addr, &data, 1);
+	Send_Buffer((ADDR_E) addr, &data, 1);
 }
 
 void MCP2517_C::FIFO_User_Address(uint8_t fifoNum){
@@ -476,7 +477,7 @@ void MCP2517_C::Send_Message_Object(uint16_t addr){
 void MCP2517_C::FIFO_Status(uint8_t fifoNum){
 	uint16_t addr = Get_FIFOSTA_Addr(fifoNum);
 	
-	Receive_Buffer((MCP2517_ADDR_E) addr, 1);
+	Receive_Buffer((ADDR_E) addr, 1);
 }
 
 // Checks MCP2517 interrupt pin
