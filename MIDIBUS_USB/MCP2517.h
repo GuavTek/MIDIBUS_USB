@@ -459,7 +459,7 @@ void MCP2517_C::Send_Message_Object(uint16_t addr){
 	msgBuff[1] = addr & 0xff;
 		
 	msgBuff[2] = CANID & 0xff;
-	msgBuff[3] = ((CANID >> 8) & 0b0011) | (broadcasting ? (1 << 2) : 0);
+	msgBuff[3] = ((CANID >> 8) & 0b0011) | (!broadcasting ? (1 << 2) : 0);
 	msgBuff[4] = 0;
 	msgBuff[5] = 0;
 		
