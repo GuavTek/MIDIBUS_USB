@@ -583,6 +583,15 @@ inline void MCP2517_C::Handler(){
 		// Data register empty
 		if (currentState == Tx) {
 			com->SPI.DATA.reg = msgBuff[txIndex];
+		} else {
+			if (txIndex <= 2){
+				// Send instruction and address bytes
+				com->SPI.DATA.reg = msgBuff[txIndex];
+			} else {
+				// Send dummy byte
+				com->SPI.DATA.reg = 0;		
+			}
+			
 		}
 		
 		txIndex++;
@@ -593,15 +602,6 @@ inline void MCP2517_C::Handler(){
 				com->SPI.INTENSET.reg = SERCOM_SPI_INTENSET_TXC;	// Wait for transmission complete
 				com->SPI.INTFLAG.reg = SERCOM_SPI_INTENSET_TXC;		// Clear flag
 			}
-		} else if(currentState == Rx) {
-			if (txIndex <= 2){
-				// Send instruction and address bytes
-				com->SPI.DATA.reg = msgBuff[txIndex-1];
-			} else {
-				// Send dummy byte
-				com->SPI.DATA.reg = 0;		
-			}
-			
 		}
 	}
 	if (com->SPI.INTFLAG.bit.RXC && com->SPI.INTENSET.bit.RXC) {
