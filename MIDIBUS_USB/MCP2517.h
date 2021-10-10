@@ -80,6 +80,121 @@ struct CAN_Rx_msg_t {
 	uint8_t dataLength;
 };
 
+struct CAN_Filter_t {
+	bool enabled;
+	uint8_t fifoDestination;
+	bool extendedID;
+	uint32_t ID;
+	bool matchBothIDTypes;
+	uint32_t maskID;
+};
+
+struct CAN_FIFO_t {
+	bool enabled;
+	uint8_t payloadSize;
+	uint8_t fifoDepth;
+	enum {None, three, unlimited} retransmitAttempt;
+	uint8_t messagePriority;
+	bool txEnable;
+	bool autoRemote;
+	bool receiveTimestamp;
+	bool exhaustedTxInterrupt;
+	bool overflowInterrupt;
+	bool fullEmptyInterrupt;
+	bool halfFullEmptyInterrupt;
+	bool notFullEmptyInterrupt;
+};
+
+const CAN_Filter_t Unused_Filter = {
+	.enabled = false,
+	.fifoDestination = 1,
+	.extendedID = false,
+	.ID = 0,
+	.matchBothIDTypes = false,
+	.maskID = 0
+};
+
+const CAN_FIFO_t Unused_Fifo = {
+	.enabled = false,
+	.payloadSize = 0,
+	.fifoDepth = 0,
+	.retransmitAttempt = None,
+	.messagePriority = 0,
+	.txEnable = false,
+	.autoRemote = false,
+	.receiveTimestamp = false,
+	.exhaustedTxInterrupt = false,
+	.overflowInterrupt = false,
+	.fullEmptyInterrupt = false,
+	.halfFullEmptyInterrupt = false,
+	.notFullEmptyInterrupt = false
+};
+
+const CAN_Filter_t CAN_FLT0 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT1 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT2 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT3 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT4 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT5 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT6 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT7 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT8 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT9 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT10 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT11 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT12 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT13 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT14 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT15 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT16 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT17 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT18 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT19 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT20 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT21 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT22 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT23 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT24 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT25 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT26 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT27 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT28 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT29 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT30 __attribute__ ((weak, alias("Unused_Filter")));
+const CAN_Filter_t CAN_FLT31 __attribute__ ((weak, alias("Unused_Filter")));
+
+const CAN_FIFO_t CAN_TXQ __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO1 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO2 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO3 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO4 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO5 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO6 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO7 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO8 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO9 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO10 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO11 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO12 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO13 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO14 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO15 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO16 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO17 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO18 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO19 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO20 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO21 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO22 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO23 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO24 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO25 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO26 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO27 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO28 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO29 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO30 __attribute__ ((weak, alias("Unused_Fifo")));
+const CAN_FIFO_t CAN_FIFO31 __attribute__ ((weak, alias("Unused_Fifo")));
 
 
 class MCP2517_C : SPI_C {
