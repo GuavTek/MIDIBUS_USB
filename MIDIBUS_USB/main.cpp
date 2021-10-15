@@ -5,28 +5,16 @@
  * Author : GuavTek
  */ 
 
-
-
+#include "MIDI_Config.h"
 #include "sam.h"
 #include "asf.h"
-#include "MIDI_Driver.h"
 #include "MCP2517.h"
 #include "SPI.h"
 
-const spi_config_t SPI_CONF = {
-	.sercomNum = 5,
-	.dipoVal = 0x3,
-	.dopoVal = 0x0,
-	.speed = 8000000,
-	.pin_cs = PIN_PB22,
-	.pinmux_mosi = PINMUX_PB02D_SERCOM5_PAD0,
-	.pinmux_miso = PINMUX_PB23D_SERCOM5_PAD3,
-	.pinmux_sck = PINMUX_PB03D_SERCOM5_PAD1
-};
 
 MCP2517_C CAN(SERCOM5);
 
-void CAN_Receive(char* data);
+void CAN_Receive(CAN_Rx_msg_t* data);
 
 //MIDI_C MIDI_USB(2);
 //MIDI_C MIDI_CAN(2);
@@ -34,18 +22,24 @@ void CAN_Receive(char* data);
 int main(void)
 {
 	system_init();
-	CAN.Init(0, SPI_CONF);
+	CAN.Init(CAN_CONF, SPI_CONF);
 	CAN.Set_Rx_Callback(CAN_Receive);
 	
 	PORT->Group[0].DIRSET.reg = (1 << 16) | (1 << 17);
-	PORT->Group[0].OUTSET.reg = 1 << 16;
+//	PORT->Group[0].OUTSET.reg = 1 << 16;
 	
 	NVIC_EnableIRQ(SERCOM5_IRQn);
 	system_interrupt_enable_global();
 	
 	char temp[4];
-	temp[2] = 69;
-	CAN.Transmit_Message(temp, 4, 1);
+	CAN_Tx_msg_t message;
+	message.payload = temp;
+	message.canFDFrame = true;
+	message.dataLengthCode = CAN.Get_DLC(4);
+	message.id = 69;
+	message.extendedID = false;
+	temp[2] = 70;
+	CAN.Transmit_Message(&message, 2);
 	
     while (1) 
     {
@@ -53,8 +47,9 @@ int main(void)
     }
 }
 
-void CAN_Receive(char* data){
-	if (data[2] == 69){
+void CAN_Receive(CAN_Rx_msg_t* data){
+	PORT->Group[0].OUTSET.reg = 1 << 16;
+	if (data->payload[2] == 70){
 		PORT->Group[0].OUTSET.reg = 1 << 17;
 	}
 }
