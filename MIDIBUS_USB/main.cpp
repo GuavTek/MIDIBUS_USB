@@ -9,7 +9,10 @@
 #include "sam.h"
 #include "asf.h"
 #include "MCP2517.h"
+#include "MCP2517.cpp"
 #include "SPI.h"
+#include "SPI.cpp"
+#include "MIDI_Driver.h"
 
 
 MCP2517_C CAN(SERCOM5);
