@@ -520,6 +520,18 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DMA_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="DMA_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="I2S_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="I2S_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>

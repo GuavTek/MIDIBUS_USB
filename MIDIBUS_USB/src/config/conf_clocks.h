@@ -97,7 +97,7 @@
 #  define CONF_CLOCK_DFLL_MAX_FINE_STEP_SIZE      (0xff / 4)
 
 /* SYSTEM_CLOCK_SOURCE_DPLL configuration - Digital Phase-Locked Loop */
-#  define CONF_CLOCK_DPLL_ENABLE                  false
+#  define CONF_CLOCK_DPLL_ENABLE                  true
 #  define CONF_CLOCK_DPLL_ON_DEMAND               true
 #  define CONF_CLOCK_DPLL_RUN_IN_STANDBY          false
 #  define CONF_CLOCK_DPLL_LOCK_BYPASS             false
@@ -106,7 +106,7 @@
 
 #  define CONF_CLOCK_DPLL_LOCK_TIME               SYSTEM_CLOCK_SOURCE_DPLL_LOCK_TIME_DEFAULT
 #  define CONF_CLOCK_DPLL_REFERENCE_CLOCK         SYSTEM_CLOCK_SOURCE_DPLL_REFERENCE_CLOCK_GCLK
-#  define CONF_CLOCK_DPLL_FILTER                  SYSTEM_CLOCK_SOURCE_DPLL_FILTER_DEFAULT
+#  define CONF_CLOCK_DPLL_FILTER                  SYSTEM_CLOCK_SOURCE_DPLL_FILTER_HIGH_DAMPING_FILTER
 
 #  define CONF_CLOCK_DPLL_REFERENCE_FREQUENCY     32768
 #  define CONF_CLOCK_DPLL_REFERENCE_DIVIDER       1
@@ -170,10 +170,10 @@
 #  define CONF_CLOCK_GCLK_6_PRESCALER             1
 #  define CONF_CLOCK_GCLK_6_OUTPUT_ENABLE         false
 
-/* Configure GCLK generator 7 */
-#  define CONF_CLOCK_GCLK_7_ENABLE                false
+/* Configure GCLK generator 7 (I2S) */
+#  define CONF_CLOCK_GCLK_7_ENABLE                true
 #  define CONF_CLOCK_GCLK_7_RUN_IN_STANDBY        false
-#  define CONF_CLOCK_GCLK_7_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_OSC8M
+#  define CONF_CLOCK_GCLK_7_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_DPLL
 #  define CONF_CLOCK_GCLK_7_PRESCALER             1
 #  define CONF_CLOCK_GCLK_7_OUTPUT_ENABLE         false
 
