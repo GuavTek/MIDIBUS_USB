@@ -273,5 +273,14 @@ void Reset_Handler(void)
  */
 void Dummy_Handler(void)
 {
+	volatile uint32_t phantomISR = 9999;
+	//volatile CoreDebug_Type deboog = CoreDebug;
+	//asm volatile ("pop %0"
+	//	: "=r" (prevPC) 
+	//	);
+	
+	while(1) {
+		phantomISR = __get_IPSR();
+	}
         return;
 }
