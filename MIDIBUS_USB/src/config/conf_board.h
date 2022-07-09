@@ -48,8 +48,6 @@
 #define USB_ID_EIC_LINE 15 //ExtInt 15
 #define USB_ID_EIC_MUX PORT_PMUX_PMUXO_A_Val
 
-void usb_host_mode_change(bool b_host_mode);
-
 static void pin_set_peripheral_function(uint32_t pinmux){    
 	uint8_t port = (uint8_t)((pinmux >> 16)/32);    
 	PORT->Group[port].PMUX[((pinmux >> 16) - (port*32))/2].reg &= ~(0xF << (4 * ((pinmux >> 16) & 0x01u)));    

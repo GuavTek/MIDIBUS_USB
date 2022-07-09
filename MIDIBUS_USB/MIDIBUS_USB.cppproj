@@ -31,10 +31,9 @@
     <AsfFrameworkConfig>
       <framework-data>
         <options>
-          <option id="common.services.usb.class.device" value="Add" config="cdc" content-id="Atmel.ASF" />
-          <option id="common.services.usb.class.host" value="Add" config="cdc" content-id="Atmel.ASF" />
           <option id="common.boards" value="Add" config="" content-id="Atmel.ASF" />
           <option id="sam0.drivers.system" value="Add" config="" content-id="Atmel.ASF" />
+          <option id="sam0.drivers.port" value="Add" config="" content-id="Atmel.ASF" />
           <option id="sam0.utils.linker_scripts" value="Add" config="" content-id="Atmel.ASF" />
         </options>
         <configurations>
@@ -228,47 +227,10 @@
           <file path="src/ASF/thirdparty/CMSIS/Lib/license.txt" framework="" version="" source="thirdparty/CMSIS/Lib/license.txt" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/thirdparty/CMSIS/README.txt" framework="" version="" source="thirdparty/CMSIS/README.txt" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/thirdparty/CMSIS/license.txt" framework="" version="" source="thirdparty/CMSIS/license.txt" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/boards/board.h" framework="" version="3.49.1" source="common\boards\board.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam0/drivers/port/port.c" framework="" version="3.49.1" source="sam0\drivers\port\port.c" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam0/drivers/port/quick_start/qs_port_basic.h" framework="" version="3.49.1" source="sam0\drivers\port\quick_start\qs_port_basic.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/sam0/drivers/port/port.h" framework="" version="3.49.1" source="sam0\drivers\port\port.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/sleepmgr/samd/sleepmgr.c" framework="" version="3.49.1" source="common\services\sleepmgr\samd\sleepmgr.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/sleepmgr/sleepmgr.h" framework="" version="3.49.1" source="common\services\sleepmgr\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/sleepmgr/samd/sleepmgr.h" framework="" version="3.49.1" source="common\services\sleepmgr\samd\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/Config/conf_sleepmgr.h" framework="" version="3.49.1" source="common\services\sleepmgr\samd\module_config\conf_sleepmgr.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/usb_atmel.h" framework="" version="3.49.1" source="common\services\usb\usb_atmel.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/usb_protocol.h" framework="" version="3.49.1" source="common\services\usb\usb_protocol.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/Config/conf_usb.h" framework="" version="3.49.1" source="common\services\usb\class\cdc\device\module_config\conf_usb.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/udc/udc.c" framework="" version="3.49.1" source="common\services\usb\udc\udc.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/udc/udc.h" framework="" version="3.49.1" source="common\services\usb\udc\udc.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/udc/udd.h" framework="" version="3.49.1" source="common\services\usb\udc\udd.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/udc/udc_desc.h" framework="" version="3.49.1" source="common\services\usb\udc\udc_desc.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/udc/udi.h" framework="" version="3.49.1" source="common\services\usb\udc\udi.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/extint/extint_callback.c" framework="" version="3.49.1" source="sam0\drivers\extint\extint_callback.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/extint/extint_callback.h" framework="" version="3.49.1" source="sam0\drivers\extint\extint_callback.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/extint/extint.h" framework="" version="3.49.1" source="sam0\drivers\extint\extint.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/Config/conf_extint.h" framework="" version="3.49.1" source="sam0\drivers\extint\module_config\conf_extint.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/extint/extint_sam_d_r_h/extint.c" framework="" version="3.49.1" source="sam0\drivers\extint\extint_sam_d_r_h\extint.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/usb/usb_sam_d_r/usb.c" framework="" version="3.49.1" source="sam0\drivers\usb\usb_sam_d_r\usb.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/usb/usb.h" framework="" version="3.49.1" source="sam0\drivers\usb\usb.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/usb/stack_interface/usb_dual.c" framework="" version="3.49.1" source="sam0\drivers\usb\stack_interface\usb_dual.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/usb/stack_interface/usb_dual.h" framework="" version="3.49.1" source="sam0\drivers\usb\stack_interface\usb_dual.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/usb/stack_interface/usb_device_udd.c" framework="" version="3.49.1" source="sam0\drivers\usb\stack_interface\usb_device_udd.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/class/cdc/usb_protocol_cdc.h" framework="" version="3.49.1" source="common\services\usb\class\cdc\usb_protocol_cdc.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc.c" framework="" version="3.49.1" source="common\services\usb\class\cdc\device\udi_cdc.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc_desc.c" framework="" version="3.49.1" source="common\services\usb\class\cdc\device\udi_cdc_desc.c" changed="False" content-id="Atmel.ASF" />
-          <file path="atmel_devices_cdc.cat" framework="" version="3.49.1" source="common\services\usb\class\cdc\device\atmel_devices_cdc.cat" changed="False" content-id="Atmel.ASF" />
-          <file path="atmel_devices_cdc.inf" framework="" version="3.49.1" source="common\services\usb\class\cdc\device\atmel_devices_cdc.inf" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc.h" framework="" version="3.49.1" source="common\services\usb\class\cdc\device\udi_cdc.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc_conf.h" framework="" version="3.49.1" source="common\services\usb\class\cdc\device\udi_cdc_conf.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/class/cdc/host/uhi_cdc.c" framework="" version="3.49.1" source="common\services\usb\class\cdc\host\uhi_cdc.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/class/cdc/host/uhi_cdc.h" framework="" version="3.49.1" source="common\services\usb\class\cdc\host\uhi_cdc.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/Config/conf_usb_host.h" framework="" version="3.49.1" source="common\services\usb\class\cdc\host\module_config\conf_usb_host.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/uhc/uhc.c" framework="" version="3.49.1" source="common\services\usb\uhc\uhc.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/uhc/uhc.h" framework="" version="3.49.1" source="common\services\usb\uhc\uhc.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/uhc/uhd.h" framework="" version="3.49.1" source="common\services\usb\uhc\uhd.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/services/usb/uhc/uhi.h" framework="" version="3.49.1" source="common\services\usb\uhc\uhi.h" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/sam0/drivers/usb/stack_interface/usb_host_uhd.c" framework="" version="3.49.1" source="sam0\drivers\usb\stack_interface\usb_host_uhd.c" changed="False" content-id="Atmel.ASF" />
-          <file path="src/ASF/common/boards/board.h" framework="" version="3.49.1" source="common\boards\board.h" changed="False" content-id="Atmel.ASF" />
         </files>
         <documentation help="https://asf.microchip.com/docs/3.49.1/common.applications.user_application.sam0_system.user_board.atsamd21g15b/html/index.html" />
         <offline-documentation help="" />
@@ -286,7 +248,7 @@
     <com_atmel_avrdbg_tool_jtagice3plus>
       <ToolOptions>
         <InterfaceProperties>
-          <SwdClock>329064</SwdClock>
+          <SwdClock>2000000</SwdClock>
         </InterfaceProperties>
         <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
@@ -294,7 +256,18 @@
       <ToolNumber>J30200019442</ToolNumber>
       <ToolName>JTAGICE3</ToolName>
     </com_atmel_avrdbg_tool_jtagice3plus>
-    <avrtoolinterfaceclock>329064</avrtoolinterfaceclock>
+    <avrtoolinterfaceclock>2000000</avrtoolinterfaceclock>
+    <com_atmel_avrdbg_tool_pickit4>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>2000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.pickit4</ToolType>
+      <ToolNumber>BUR201774490</ToolNumber>
+      <ToolName>MPLAB® PICkit 4</ToolName>
+    </com_atmel_avrdbg_tool_pickit4>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -309,6 +282,7 @@
             <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../src/ASF/common/boards</Value>
+            <Value>../src/ASF/sam0/drivers/port</Value>
           </ListValues>
         </armgcc.compiler.directories.IncludePaths>
         <armgcccpp.compiler.directories.IncludePaths>
@@ -316,6 +290,7 @@
             <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../src/ASF/common/boards</Value>
+            <Value>../src/ASF/sam0/drivers/port</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.linker.libraries.LibrarySearchPaths>
@@ -329,6 +304,7 @@
             <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../src/ASF/common/boards</Value>
+            <Value>../src/ASF/sam0/drivers/port</Value>
           </ListValues>
         </armgcccpp.assembler.general.IncludePaths>
         <armgcccpp.preprocessingassembler.general.IncludePaths>
@@ -336,6 +312,7 @@
             <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../src/ASF/common/boards</Value>
+            <Value>../src/ASF/sam0/drivers/port</Value>
           </ListValues>
         </armgcccpp.preprocessingassembler.general.IncludePaths>
       </ArmGccCpp>
@@ -354,11 +331,6 @@
             <Value>DEBUG</Value>
             <Value>BOARD=USER_BOARD</Value>
             <Value>ARM_MATH_CM0PLUS=true</Value>
-            <Value>USB_DEVICE_LPM_SUPPORT</Value>
-            <Value>UDD_ENABLE</Value>
-            <Value>EXTINT_CALLBACK_MODE=true</Value>
-            <Value>USB_HOST_LPM_SUPPORT</Value>
-            <Value>UHD_ENABLE</Value>
           </ListValues>
         </armgcc.compiler.symbols.DefSymbols>
         <armgcc.compiler.directories.IncludePaths>
@@ -384,22 +356,12 @@
             <Value>../src/ASF/common2/boards/user_board</Value>
             <Value>../src</Value>
             <Value>../src/config</Value>
-            <Value>../src/ASF/sam0/drivers/port</Value>
-            <Value>../src/ASF/common/services/sleepmgr</Value>
-            <Value>../src/ASF/common/services/usb</Value>
-            <Value>../src/ASF/common/services/usb/udc</Value>
-            <Value>../src/ASF/sam0/drivers/extint</Value>
-            <Value>../src/ASF/sam0/drivers/extint/extint_sam_d_r_h</Value>
-            <Value>../src/ASF/sam0/drivers/usb</Value>
-            <Value>../src/ASF/sam0/drivers/usb/usb_sam_d_r</Value>
-            <Value>../src/ASF/sam0/drivers/usb/stack_interface</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc/device</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc/host</Value>
-            <Value>../src/ASF/common/services/usb/uhc</Value>
             <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../src/ASF/common/boards</Value>
+            <Value>../tinyusb/src</Value>
+            <Value>..</Value>
+            <Value>../src/ASF/sam0/drivers/port</Value>
           </ListValues>
         </armgcc.compiler.directories.IncludePaths>
         <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -470,6 +432,8 @@
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../MCP2517_ATSAMD_driver/MCP2517_ATSAMD_driver</Value>
             <Value>../MIDI_driver</Value>
+            <Value>../tinyusb/src</Value>
+            <Value>..</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.compiler.optimization.level>Optimize debugging experience (-Og)</armgcccpp.compiler.optimization.level>
@@ -514,26 +478,14 @@
             <Value>../src/ASF/common2/boards/user_board</Value>
             <Value>../src</Value>
             <Value>../src/config</Value>
-            <Value>../src/ASF/sam0/drivers/port</Value>
-            <Value>../src/ASF/common/services/sleepmgr</Value>
-            <Value>../src/ASF/common/services/usb</Value>
-            <Value>../src/ASF/common/services/usb/udc</Value>
-            <Value>../src/ASF/sam0/drivers/extint</Value>
-            <Value>../src/ASF/sam0/drivers/extint/extint_sam_d_r_h</Value>
-            <Value>../src/ASF/sam0/drivers/usb</Value>
-            <Value>../src/ASF/sam0/drivers/usb/usb_sam_d_r</Value>
-            <Value>../src/ASF/sam0/drivers/usb/stack_interface</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc/device</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc/host</Value>
-            <Value>../src/ASF/common/services/usb/uhc</Value>
             <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../src/ASF/common/boards</Value>
+            <Value>../src/ASF/sam0/drivers/port</Value>
           </ListValues>
         </armgcccpp.assembler.general.IncludePaths>
         <armgcccpp.assembler.debugging.DebugLevel>Default (-g)</armgcccpp.assembler.debugging.DebugLevel>
-        <armgcccpp.preprocessingassembler.general.AssemblerFlags>-DUSB_DEVICE_LPM_SUPPORT -DUDD_ENABLE -DEXTINT_CALLBACK_MODE=true -DUSB_HOST_LPM_SUPPORT -DUHD_ENABLE</armgcccpp.preprocessingassembler.general.AssemblerFlags>
+        <armgcccpp.preprocessingassembler.general.AssemblerFlags>-DUSB_DEVICE_LPM_SUPPORT</armgcccpp.preprocessingassembler.general.AssemblerFlags>
         <armgcccpp.preprocessingassembler.general.IncludePaths>
           <ListValues>
             <Value>../src/ASF/sam0/utils</Value>
@@ -557,22 +509,10 @@
             <Value>../src/ASF/common2/boards/user_board</Value>
             <Value>../src</Value>
             <Value>../src/config</Value>
-            <Value>../src/ASF/sam0/drivers/port</Value>
-            <Value>../src/ASF/common/services/sleepmgr</Value>
-            <Value>../src/ASF/common/services/usb</Value>
-            <Value>../src/ASF/common/services/usb/udc</Value>
-            <Value>../src/ASF/sam0/drivers/extint</Value>
-            <Value>../src/ASF/sam0/drivers/extint/extint_sam_d_r_h</Value>
-            <Value>../src/ASF/sam0/drivers/usb</Value>
-            <Value>../src/ASF/sam0/drivers/usb/usb_sam_d_r</Value>
-            <Value>../src/ASF/sam0/drivers/usb/stack_interface</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc/device</Value>
-            <Value>../src/ASF/common/services/usb/class/cdc/host</Value>
-            <Value>../src/ASF/common/services/usb/uhc</Value>
             <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.3.395\samd21d\include</Value>
             <Value>../src/ASF/common/boards</Value>
+            <Value>../src/ASF/sam0/drivers/port</Value>
           </ListValues>
         </armgcccpp.preprocessingassembler.general.IncludePaths>
         <armgcccpp.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcccpp.preprocessingassembler.debugging.DebugLevel>
@@ -581,6 +521,447 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="main.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam0\drivers\port\port.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\sam0\drivers\port\quick_start\qs_port_basic.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam0\drivers\port\port.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="tinyusb\src\class\audio\audio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\audio\audio_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\audio\audio_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\bth\bth_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\bth\bth_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc_host.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc_host.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc_rndis.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc_rndis_host.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\cdc\cdc_rndis_host.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\dfu\dfu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\dfu\dfu_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\dfu\dfu_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\dfu\dfu_rt_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\dfu\dfu_rt_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\hid\hid.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\hid\hid_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\hid\hid_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\hid\hid_host.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\hid\hid_host.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\midi\midi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\midi\midi_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\midi\midi_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\msc\msc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\msc\msc_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\msc\msc_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\msc\msc_host.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\msc\msc_host.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\net\ecm_rndis_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\net\ncm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\net\ncm_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\net\net_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\usbtmc\usbtmc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\usbtmc\usbtmc_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\usbtmc\usbtmc_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\vendor\vendor_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\vendor\vendor_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\vendor\vendor_host.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\vendor\vendor_host.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\video\video.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\video\video_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\class\video\video_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_common.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_compiler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_debug.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_fifo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_fifo.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_mcu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_private.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_timeout.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_types.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\common\tusb_verify.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\device\dcd.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\device\usbd.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\device\usbd.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\device\usbd_control.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\device\usbd_pvt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\host\hcd.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\host\hub.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\host\hub.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\host\usbh.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\host\usbh.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\host\usbh_classdriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\osal\osal.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\osal\osal_freertos.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\osal\osal_mynewt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\osal\osal_none.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\osal\osal_pico.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\osal\osal_rtthread.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\osal\osal_rtx4.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\bridgetek\ft9xx\dcd_ft9xx.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\chipidea\ci_hs\ci_hs_imxrt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\chipidea\ci_hs\ci_hs_lpc18_43.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\chipidea\ci_hs\ci_hs_type.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\chipidea\ci_hs\dcd_ci_hs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\chipidea\ci_hs\hcd_ci_hs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\dialog\da146xx\dcd_da146xx.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\ehci\ehci.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\ehci\ehci.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\ehci\ehci_api.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\espressif\esp32sx\dcd_esp32sx.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\mentor\musb\dcd_musb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\mentor\musb\hcd_musb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\mentor\musb\musb_msp432e.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\mentor\musb\musb_tm4c.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\mentor\musb\musb_type.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\pic32mz\dcd_pic32mz.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\pic32mz\usbhs_registers.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\samd\dcd_samd.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\samg\dcd_samg.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\samx7x\common_usb_regs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\samx7x\dcd_samx7x.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\mindmotion\mm32\dcd_mm32f327x_otg.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nordic\nrf5x\dcd_nrf5x.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nuvoton\nuc120\dcd_nuc120.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nuvoton\nuc121\dcd_nuc121.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nuvoton\nuc505\dcd_nuc505.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\khci\dcd_khci.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\khci\hcd_khci.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\lpc17_40\dcd_lpc17_40.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\lpc17_40\dcd_lpc17_40.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\lpc17_40\hcd_lpc17_40.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\lpc_ip3511\dcd_lpc_ip3511.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\transdimension\common_transdimension.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\transdimension\dcd_transdimension.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\nxp\transdimension\hcd_transdimension.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\ohci\ohci.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\ohci\ohci.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\raspberrypi\pio_usb\dcd_pio_usb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\raspberrypi\pio_usb\hcd_pio_usb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\raspberrypi\rp2040\dcd_rp2040.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\raspberrypi\rp2040\hcd_rp2040.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\raspberrypi\rp2040\rp2040_usb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\raspberrypi\rp2040\rp2040_usb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\renesas\usba\dcd_usba.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\renesas\usba\hcd_usba.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\sony\cxd56\dcd_cxd56.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\st\stm32_fsdev\dcd_stm32_fsdev.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\st\stm32_fsdev\dcd_stm32_fsdev_pvt_st.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\st\synopsys\dcd_synopsys.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\st\synopsys\synopsys_common.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\sunxi\dcd_sunxi_musb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\sunxi\musb_def.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dcd_dwc2.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dwc2_bcm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dwc2_efm32.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dwc2_esp32.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dwc2_gd32.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dwc2_stm32.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dwc2_type.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\synopsys\dwc2\dwc2_xmc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\template\dcd_template.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\ti\msp430x5xx\dcd_msp430x5xx.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\valentyusb\eptri\dcd_eptri.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\portable\valentyusb\eptri\dcd_eptri.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\tusb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\tusb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tinyusb\src\tusb_option.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tusb_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb_descriptors.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb_descriptors.h">
       <SubType>compile</SubType>
     </Compile>
     <None Include="Device_Startup\samd21g17d_flash.ld">
@@ -611,24 +992,6 @@
       <SubType>compile</SubType>
     </None>
     <None Include="MIDI_driver\README.md">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\config\conf_usb_host.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="atmel_devices_cdc.cat">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="atmel_devices_cdc.inf">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\config\conf_extint.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\config\conf_usb.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\config\conf_sleepmgr.h">
       <SubType>compile</SubType>
     </None>
     <None Include="src\asf.h">
@@ -670,69 +1033,6 @@
     <None Include="src\ASF\common\boards\board.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\ASF\common\services\sleepmgr\samd\sleepmgr.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\common\services\sleepmgr\sleepmgr.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\sleepmgr\samd\sleepmgr.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\usb_atmel.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\usb_protocol.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\class\cdc\usb_protocol_cdc.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\common\services\usb\class\cdc\device\udi_cdc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\common\services\usb\class\cdc\device\udi_cdc.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\class\cdc\device\udi_cdc_conf.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\common\services\usb\class\cdc\device\udi_cdc_desc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\ASF\common\services\usb\class\cdc\host\uhi_cdc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\common\services\usb\class\cdc\host\uhi_cdc.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\common\services\usb\udc\udc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\common\services\usb\udc\udc.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\udc\udd.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\udc\udc_desc.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\udc\udi.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\common\services\usb\uhc\uhc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\common\services\usb\uhc\uhc.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\uhc\uhd.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\common\services\usb\uhc\uhi.h">
-      <SubType>compile</SubType>
-    </None>
     <Compile Include="src\ASF\common\utils\interrupt\interrupt_sam_nvic.c">
       <SubType>compile</SubType>
     </Compile>
@@ -743,27 +1043,6 @@
       <SubType>compile</SubType>
     </None>
     <None Include="src\ASF\sam0\drivers\system\clock\clock.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam0\drivers\extint\extint.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\sam0\drivers\extint\extint_callback.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam0\drivers\extint\extint_callback.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\sam0\drivers\extint\extint_sam_d_r_h\extint.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\ASF\sam0\drivers\port\port.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam0\drivers\port\quick_start\qs_port_basic.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam0\drivers\port\port.h">
       <SubType>compile</SubType>
     </None>
     <Compile Include="src\ASF\sam0\drivers\system\clock\clock_samd21_r21_da_ha1\clock.c">
@@ -1207,24 +1486,6 @@
     <None Include="src\ASF\sam0\utils\cmsis\samd21\include\component\i2s.h">
       <SubType>compile</SubType>
     </None>
-    <None Include="src\ASF\sam0\drivers\usb\usb.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\sam0\drivers\usb\stack_interface\usb_device_udd.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\ASF\sam0\drivers\usb\stack_interface\usb_dual.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam0\drivers\usb\stack_interface\usb_dual.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\sam0\drivers\usb\stack_interface\usb_host_uhd.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\ASF\sam0\drivers\usb\usb_sam_d_r\usb.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\ASF\sam0\utils\cmsis\samd21\source\gcc\startup_samd21.c">
       <SubType>compile</SubType>
     </Compile>
@@ -1306,6 +1567,9 @@
     <None Include="src\config\conf_clocks.h">
       <SubType>compile</SubType>
     </None>
+    <None Include="tinyusb\src\portable\synopsys\dwc2\hwcfg_list.md">
+      <SubType>compile</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device_Startup\" />
@@ -1319,22 +1583,10 @@
     <Folder Include="src\ASF\common2\boards\user_board\" />
     <Folder Include="src\ASF\common\" />
     <Folder Include="src\ASF\common\boards\" />
-    <Folder Include="src\ASF\common\services\" />
-    <Folder Include="src\ASF\common\services\sleepmgr\" />
-    <Folder Include="src\ASF\common\services\sleepmgr\samd\" />
-    <Folder Include="src\ASF\common\services\usb\" />
-    <Folder Include="src\ASF\common\services\usb\class\" />
-    <Folder Include="src\ASF\common\services\usb\class\cdc\" />
-    <Folder Include="src\ASF\common\services\usb\class\cdc\device\" />
-    <Folder Include="src\ASF\common\services\usb\class\cdc\host\" />
-    <Folder Include="src\ASF\common\services\usb\udc\" />
-    <Folder Include="src\ASF\common\services\usb\uhc\" />
     <Folder Include="src\ASF\common\utils\" />
     <Folder Include="src\ASF\common\utils\interrupt\" />
     <Folder Include="src\ASF\sam0\" />
     <Folder Include="src\ASF\sam0\drivers\" />
-    <Folder Include="src\ASF\sam0\drivers\extint\" />
-    <Folder Include="src\ASF\sam0\drivers\extint\extint_sam_d_r_h\" />
     <Folder Include="src\ASF\sam0\drivers\port\" />
     <Folder Include="src\ASF\sam0\drivers\port\quick_start\" />
     <Folder Include="src\ASF\sam0\drivers\system\" />
@@ -1348,9 +1600,6 @@
     <Folder Include="src\ASF\sam0\drivers\system\power\power_sam_d_r_h\" />
     <Folder Include="src\ASF\sam0\drivers\system\reset\" />
     <Folder Include="src\ASF\sam0\drivers\system\reset\reset_sam_d_r_h\" />
-    <Folder Include="src\ASF\sam0\drivers\usb\" />
-    <Folder Include="src\ASF\sam0\drivers\usb\stack_interface\" />
-    <Folder Include="src\ASF\sam0\drivers\usb\usb_sam_d_r\" />
     <Folder Include="src\ASF\sam0\utils\" />
     <Folder Include="src\ASF\sam0\utils\cmsis\" />
     <Folder Include="src\ASF\sam0\utils\cmsis\samd21\" />
@@ -1374,6 +1623,73 @@
     <Folder Include="src\ASF\thirdparty\CMSIS\Lib\" />
     <Folder Include="src\ASF\thirdparty\CMSIS\Lib\GCC\" />
     <Folder Include="src\config\" />
+    <Folder Include="tinyusb\" />
+    <Folder Include="tinyusb\src\" />
+    <Folder Include="tinyusb\src\class\" />
+    <Folder Include="tinyusb\src\class\audio\" />
+    <Folder Include="tinyusb\src\class\bth\" />
+    <Folder Include="tinyusb\src\class\cdc\" />
+    <Folder Include="tinyusb\src\class\dfu\" />
+    <Folder Include="tinyusb\src\class\hid\" />
+    <Folder Include="tinyusb\src\class\midi\" />
+    <Folder Include="tinyusb\src\class\msc\" />
+    <Folder Include="tinyusb\src\class\net\" />
+    <Folder Include="tinyusb\src\class\usbtmc\" />
+    <Folder Include="tinyusb\src\class\vendor\" />
+    <Folder Include="tinyusb\src\class\video\" />
+    <Folder Include="tinyusb\src\common\" />
+    <Folder Include="tinyusb\src\device\" />
+    <Folder Include="tinyusb\src\host\" />
+    <Folder Include="tinyusb\src\osal\" />
+    <Folder Include="tinyusb\src\portable\" />
+    <Folder Include="tinyusb\src\portable\bridgetek\" />
+    <Folder Include="tinyusb\src\portable\bridgetek\ft9xx\" />
+    <Folder Include="tinyusb\src\portable\chipidea\" />
+    <Folder Include="tinyusb\src\portable\chipidea\ci_hs\" />
+    <Folder Include="tinyusb\src\portable\dialog\" />
+    <Folder Include="tinyusb\src\portable\dialog\da146xx\" />
+    <Folder Include="tinyusb\src\portable\ehci\" />
+    <Folder Include="tinyusb\src\portable\espressif\" />
+    <Folder Include="tinyusb\src\portable\espressif\esp32sx\" />
+    <Folder Include="tinyusb\src\portable\mentor\" />
+    <Folder Include="tinyusb\src\portable\mentor\musb\" />
+    <Folder Include="tinyusb\src\portable\microchip\" />
+    <Folder Include="tinyusb\src\portable\microchip\pic32mz\" />
+    <Folder Include="tinyusb\src\portable\microchip\samd\" />
+    <Folder Include="tinyusb\src\portable\microchip\samg\" />
+    <Folder Include="tinyusb\src\portable\microchip\samx7x\" />
+    <Folder Include="tinyusb\src\portable\mindmotion\" />
+    <Folder Include="tinyusb\src\portable\mindmotion\mm32\" />
+    <Folder Include="tinyusb\src\portable\nordic\" />
+    <Folder Include="tinyusb\src\portable\nordic\nrf5x\" />
+    <Folder Include="tinyusb\src\portable\nuvoton\" />
+    <Folder Include="tinyusb\src\portable\nuvoton\nuc120\" />
+    <Folder Include="tinyusb\src\portable\nuvoton\nuc121\" />
+    <Folder Include="tinyusb\src\portable\nuvoton\nuc505\" />
+    <Folder Include="tinyusb\src\portable\nxp\" />
+    <Folder Include="tinyusb\src\portable\nxp\khci\" />
+    <Folder Include="tinyusb\src\portable\nxp\lpc17_40\" />
+    <Folder Include="tinyusb\src\portable\nxp\lpc_ip3511\" />
+    <Folder Include="tinyusb\src\portable\nxp\transdimension\" />
+    <Folder Include="tinyusb\src\portable\ohci\" />
+    <Folder Include="tinyusb\src\portable\raspberrypi\" />
+    <Folder Include="tinyusb\src\portable\raspberrypi\pio_usb\" />
+    <Folder Include="tinyusb\src\portable\raspberrypi\rp2040\" />
+    <Folder Include="tinyusb\src\portable\renesas\" />
+    <Folder Include="tinyusb\src\portable\renesas\usba\" />
+    <Folder Include="tinyusb\src\portable\sony\" />
+    <Folder Include="tinyusb\src\portable\sony\cxd56\" />
+    <Folder Include="tinyusb\src\portable\st\" />
+    <Folder Include="tinyusb\src\portable\st\stm32_fsdev\" />
+    <Folder Include="tinyusb\src\portable\st\synopsys\" />
+    <Folder Include="tinyusb\src\portable\sunxi\" />
+    <Folder Include="tinyusb\src\portable\synopsys\" />
+    <Folder Include="tinyusb\src\portable\synopsys\dwc2\" />
+    <Folder Include="tinyusb\src\portable\template\" />
+    <Folder Include="tinyusb\src\portable\ti\" />
+    <Folder Include="tinyusb\src\portable\ti\msp430x5xx\" />
+    <Folder Include="tinyusb\src\portable\valentyusb\" />
+    <Folder Include="tinyusb\src\portable\valentyusb\eptri\" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
