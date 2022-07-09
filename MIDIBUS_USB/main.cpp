@@ -18,10 +18,26 @@ MCP2517_C CAN(SERCOM5);
 
 void CAN_Receive(CAN_Rx_msg_t* data);
 void USB_Init();
+void midi_task(void);
 
-//MIDI_C MIDI_USB(2);
-//MIDI_C MIDI_CAN(2);
+void MIDI2_CAN_voice_handler (struct MIDI2_voice_t* msg);
+void MIDI2_CAN_data128_handler (struct MIDI2_data128_t* msg);
+void MIDI2_CAN_data64_handler (struct MIDI2_data64_t* msg);
+void MIDI2_CAN_com_handler (struct MIDI2_com_t* msg);
+void MIDI2_CAN_util_handler (struct MIDI2_util_t* msg);
+void MIDI1_CAN_handler (struct MIDI1_msg_t* msg);
 
+void MIDI2_USB_voice_handler (struct MIDI2_voice_t* msg);
+void MIDI2_USB_data128_handler (struct MIDI2_data128_t* msg);
+void MIDI2_USB_data64_handler (struct MIDI2_data64_t* msg);
+void MIDI2_USB_com_handler (struct MIDI2_com_t* msg);
+void MIDI2_USB_util_handler (struct MIDI2_util_t* msg);
+void MIDI1_USB_handler (struct MIDI1_msg_t* msg);
+
+MIDI_C MIDI_USB(1);
+MIDI_C MIDI_CAN(2);
+
+uint32_t midiID = 616;
 uint32_t blinkTime = 100;
 uint32_t blinkTime2 = 100;
 volatile uint32_t system_ticks = 0;
@@ -42,6 +58,20 @@ int main(void)
 	USB_Init();
 	tusb_init();
 
+	MIDI_CAN.Set_handler(MIDI2_CAN_voice_handler);
+	MIDI_CAN.Set_handler(MIDI2_CAN_data128_handler);
+	MIDI_CAN.Set_handler(MIDI2_CAN_data64_handler);
+	MIDI_CAN.Set_handler(MIDI2_CAN_com_handler);
+	MIDI_CAN.Set_handler(MIDI2_CAN_util_handler);
+	MIDI_CAN.Set_handler(MIDI1_CAN_handler);
+	
+	MIDI_USB.Set_handler(MIDI2_USB_voice_handler);
+	MIDI_USB.Set_handler(MIDI2_USB_data128_handler);
+	MIDI_USB.Set_handler(MIDI2_USB_data64_handler);
+	MIDI_USB.Set_handler(MIDI2_USB_com_handler);
+	MIDI_USB.Set_handler(MIDI2_USB_util_handler);
+	MIDI_USB.Set_handler(MIDI1_USB_handler);
+	/**/
 	
 	NVIC_EnableIRQ(SERCOM5_IRQn);
 	system_interrupt_enable_global();
@@ -63,6 +93,8 @@ int main(void)
 		// USB tasks
 		tud_task();
 		//tuh_task();
+		
+		midi_task();
 		
 		static uint32_t timrr = 0;
 		if (timrr < system_ticks/**/)	{
@@ -102,10 +134,138 @@ void USB_Init(){
 	
 }
 
+// Handle MIDI CAN data
 void CAN_Receive(CAN_Rx_msg_t* data){
-	PORT->Group[0].OUTSET.reg = 1 << 16;
-	if (data->payload[2] == 70){
-		PORT->Group[0].OUTSET.reg = 1 << 17;
+	MIDI_CAN.Decode(data->payload, CAN.Get_Data_Length(data->dataLengthCode) );
+}
+
+
+void MIDI2_CAN_voice_handler (struct MIDI2_voice_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		// Voice packages are MIDI 2.0 only?
+		return;
+	}
+	
+	char tempData[8];
+	uint8_t length;
+	length = MIDI_USB.Encode(tempData, msg);
+	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
+}
+
+void MIDI2_CAN_data128_handler (struct MIDI2_data128_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		// 128 bit sysex messages are MIDI 2.0 only
+		return;
+	}
+	
+	char tempData[16];
+	uint8_t length;
+	length = MIDI_USB.Encode(tempData, msg);
+	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
+}
+
+void MIDI2_CAN_data64_handler (struct MIDI2_data64_t* msg){
+	char tempData[8];
+	uint8_t length;
+	length = MIDI_USB.Encode(tempData, msg, MIDI_USB.Get_Version());
+	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
+}
+
+void MIDI2_CAN_com_handler (struct MIDI2_com_t* msg){
+	char tempData[4];
+	uint8_t length;
+	length = MIDI_USB.Encode(tempData, msg, MIDI_USB.Get_Version());
+	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
+}
+
+void MIDI2_CAN_util_handler (struct MIDI2_util_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		// Utility messages are MIDI 2.0 only
+		return;
+	}
+	
+	char tempData[4];
+	uint8_t length;
+	length = MIDI_USB.Encode(tempData, msg);
+	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
+}
+
+void MIDI1_CAN_handler (struct MIDI1_msg_t* msg){
+	char tempData[4];
+	uint8_t length;
+	length = MIDI_USB.Encode(tempData, msg, MIDI_USB.Get_Version());
+	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
+	//PORT->Group[0].OUTSET.reg = 1 << 16;
+}
+
+// Handle USB midi data
+void MIDI2_USB_voice_handler (struct MIDI2_voice_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		return;
+	}
+	char tempData[8];
+	
+}
+
+void MIDI2_USB_data128_handler (struct MIDI2_data128_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		return;
+	}
+	char tempData[16];
+	
+}
+
+void MIDI2_USB_data64_handler (struct MIDI2_data64_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		return;
+	}
+	char tempData[8];
+	
+}
+
+void MIDI2_USB_com_handler (struct MIDI2_com_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		return;
+	}
+	char tempData[4];
+	
+}
+
+void MIDI2_USB_util_handler (struct MIDI2_util_t* msg){
+	if (MIDI_USB.Get_Version() == 1){
+		return;
+	}
+	char tempData[4];
+	uint8_t length;
+	length = MIDI_CAN.Encode(tempData, msg);
+	CAN_Tx_msg_t txMsg;
+	txMsg.dataLengthCode = CAN.Get_DLC(length);
+	txMsg.payload = tempData;
+	txMsg.id = midiID;
+	CAN.Transmit_Message(&txMsg, 2);
+}
+
+void MIDI1_USB_handler (struct MIDI1_msg_t* msg){
+	char tempData[4];
+	uint8_t length;
+	length = MIDI_CAN.Encode(tempData, msg, 2);
+	CAN_Tx_msg_t txMsg;
+	txMsg.dataLengthCode = CAN.Get_DLC(length);
+	txMsg.payload = tempData;
+	txMsg.id = midiID;
+	CAN.Transmit_Message(&txMsg, 2);
+}
+
+void midi_task(void)
+{
+	uint8_t packet[16];
+	uint8_t length;
+	while ( tud_midi_available() ) {
+		length = tud_midi_stream_read(packet, 16);
+		MIDI_USB.Decode((char*)(packet), length);
+	}
+}
+/**/
 
 //--------------------------------------------------------------------+
 // Device callbacks
