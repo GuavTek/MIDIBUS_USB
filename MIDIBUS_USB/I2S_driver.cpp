@@ -49,6 +49,7 @@ void i2s_init(const uint32_t samplerate){
 	// Configure Serializers
 	I2S->SERCTRL[0].reg =	I2S_SERCTRL_CLKSEL_CLK0 |
 							I2S_SERCTRL_MONO_STEREO |
+							I2S_SERCTRL_DMA_MULTIPLE |
 							I2S_SERCTRL_BITREV_MSBIT |
 							I2S_SERCTRL_DATASIZE_32 |
 							I2S_SERCTRL_EXTEND_ZERO	|
@@ -58,6 +59,7 @@ void i2s_init(const uint32_t samplerate){
 							
 	I2S->SERCTRL[1].reg =	I2S_SERCTRL_CLKSEL_CLK0 |
 							I2S_SERCTRL_MONO_STEREO |
+							I2S_SERCTRL_DMA_MULTIPLE |
 							I2S_SERCTRL_BITREV_MSBIT |
 							I2S_SERCTRL_DATASIZE_32 |
 							I2S_SERCTRL_EXTEND_ZERO |
