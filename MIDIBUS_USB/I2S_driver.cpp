@@ -24,6 +24,11 @@ void i2s_init(const uint32_t samplerate){
 	PORT->Group[0].DIRSET.reg = 1 << 11;
 	pin_set_peripheral_function(PINMUX_PA11G_I2S_FS0);
 	
+	// Enable reading of I2S FS pin
+	PORT->Group[0].DIRCLR.reg = (1 << 11);
+	PORT->Group[0].PINCFG[11].bit.INEN = 1;
+	
+	
 	// Enable peripheral clocks
 	PM->APBCMASK.reg |= PM_APBCMASK_I2S;
 	

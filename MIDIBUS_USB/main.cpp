@@ -835,7 +835,7 @@ void audio_task(void)
 	/**/
 	
 	// Speaker data waiting?
-	if (spk_data_new > 0){
+	if (spk_data_new != 0){
 		// Check if buffer is valid, and is not being processed
 		if ( (!i2s_tx_descriptor_ra->btctrl.valid) && (i2s_tx_descriptor_rwb->next_descriptor != i2s_tx_descriptor_rb) )	{
 			uint8_t data_shift = (current_resolution_out + 8) >> 4;
@@ -899,8 +899,15 @@ void audio_task(void)
 		// Is transaction active?
 		if ( !DMAC->INTSTATUS.bit.CHINT1 ) {
 			// Resume channel
+	}
+	
+	if (spk_active){
+		//bool state = PORT->Group[0].IN.reg & (1 << 11);
+		// For single DMA
+		bool state = !(PORT->Group[0].IN.reg & (1 << 11)) && !(i2s_tx_descriptor_wb->beatcount & 0x1);
+		if (state){
 			dma_resume(1);
-		}*/
+		}
 	}
 	
 	if (mic_active){
@@ -940,12 +947,11 @@ void audio_task(void)
 			dma_set_descriptor(i2s_rx_descriptor_rb, ((mic_buf_size) >> data_shift), i2s_rx_reg, right_point, i2s_rx_descriptor_ra, tempCtrl);
 		}
 		
-		// Has pending interrupts?
-		//if ( !DMAC->INTSTATUS.bit.CHINT0 ) {
+		bool state = !(PORT->Group[0].IN.reg & (1 << 11)) && !(i2s_rx_descriptor_wb->beatcount & 0x1);
+		if (state) {
 			// Resume channel
 			dma_resume(0);
-			dma_resume(1);
-		//}
+		}
 	}
 }
 
