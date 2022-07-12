@@ -847,22 +847,31 @@ void audio_task(void)
 		}
 	}
 	
-	bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
-	static bool fs_prev;
-	fs_pin ^= fs_prev;
-	fs_prev = PORT->Group[0].IN.reg & (1 << 11);	
-
 	if (spk_active){
 		// For single DMA
-		bool state = fs_pin == (bool)(i2s_tx_descriptor_wb->beatcount & 0x1);
-		if (state){
+		bool state;
+		uint32_t tempReg = DMAC->ACTIVE.reg;
+		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+		if ((tempReg & DMAC_ACTIVE_ID_Msk) == 1){
+			state = fs_pin == (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
+		} else {
+			state = fs_pin == (bool)(i2s_tx_descriptor_wb->beatcount & 0x1);
+		}
+		if (state && !DMAC->BUSYCH.bit.BUSYCH1){
 			dma_resume(1);
 		}
 	}
 	
 	if (mic_active){
-		bool state = fs_pin == (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
-		if (state) {
+		bool state;
+		uint32_t tempReg = DMAC->ACTIVE.reg;
+		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+		if ((tempReg & DMAC_ACTIVE_ID_Msk) == 0){
+			state = fs_pin == (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
+		} else {
+			state = fs_pin == (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
+		}
+		if (state && !DMAC->BUSYCH.bit.BUSYCH0){
 			// Resume channel
 			dma_resume(0);
 		}
