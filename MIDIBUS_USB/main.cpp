@@ -30,6 +30,7 @@ void MIDI2_CAN_data64_handler (struct MIDI2_data64_t* msg);
 void MIDI2_CAN_com_handler (struct MIDI2_com_t* msg);
 void MIDI2_CAN_util_handler (struct MIDI2_util_t* msg);
 void MIDI1_CAN_handler (struct MIDI1_msg_t* msg);
+void MIDI_CAN_UMP_handler(struct MIDI_UMP_t* msg);
 
 void MIDI2_USB_voice_handler (struct MIDI2_voice_t* msg);
 void MIDI2_USB_data128_handler (struct MIDI2_data128_t* msg);
@@ -95,6 +96,8 @@ int main(void)
 	MIDI_CAN.Set_handler(MIDI2_CAN_com_handler);
 	MIDI_CAN.Set_handler(MIDI2_CAN_util_handler);
 	MIDI_CAN.Set_handler(MIDI1_CAN_handler);
+	
+	MIDI_CAN.Set_handler(MIDI_CAN_UMP_handler);
 	
 	MIDI_USB.Set_handler(MIDI2_USB_voice_handler);
 	MIDI_USB.Set_handler(MIDI2_USB_data128_handler);
@@ -197,6 +200,15 @@ void CAN_Receive(CAN_Rx_msg_t* data){
 	MIDI_CAN.Decode(data->payload, CAN.Get_Data_Length(data->dataLengthCode) );
 }
 
+void MIDI_CAN_UMP_handler(struct MIDI_UMP_t* msg){
+	char tempData[16];
+	uint8_t length;
+	length = MIDI_USB.Encode(tempData, msg, MIDI_USB.Get_Version());
+	
+	if (length > 0){
+		tud_midi_stream_write(0, (uint8_t*)(tempData), length);
+	}
+}
 
 void MIDI2_CAN_voice_handler (struct MIDI2_voice_t* msg){
 	if (MIDI_USB.Get_Version() == 1){
