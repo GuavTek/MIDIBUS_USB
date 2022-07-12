@@ -87,13 +87,21 @@ inline void dma_set_descriptor(DMA_Descriptor_t* descriptor, uint16_t beatcount,
 	uint32_t* tempSrc;
 	uint32_t* tempDst;
 	if (ctrl.srcinc){
-		tempSrc = (uint32_t*) (((uint32_t) src) + endPoint);
+		if (ctrl.stepsel == DMAC_BTCTRL_STEPSEL_SRC_Val){
+			tempSrc = (uint32_t*) (((uint32_t) src) + endPoint * (1 << ctrl.stepsize));
+		} else {
+			tempSrc = (uint32_t*) (((uint32_t) src) + endPoint);
+		}
 	} else {
 		tempSrc = src;
 	}
 	
 	if (ctrl.dstinc){
-		tempDst = (uint32_t*) (((uint32_t) dst) + endPoint);
+		if (ctrl.stepsel == DMAC_BTCTRL_STEPSEL_DST_Val){
+			tempDst = (uint32_t*) (((uint32_t) dst) + endPoint * (1 << ctrl.stepsize));
+		} else {
+			tempDst = (uint32_t*) (((uint32_t) dst) + endPoint);
+		}
 	} else {
 		tempDst = dst;
 	}
