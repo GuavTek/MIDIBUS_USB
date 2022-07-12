@@ -847,35 +847,24 @@ void audio_task(void)
 		}
 	}
 	
-	if (spk_active){
+	bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+	static bool prevfs_tx;
+	if (spk_active && !DMAC->BUSYCH.bit.BUSYCH1 && (prevfs_tx != fs_pin)){
 		// For single DMA
 		bool state;
 		uint32_t tempReg = DMAC->ACTIVE.reg;
-		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
 		if ((tempReg & DMAC_ACTIVE_ID_Msk) == 1){
 			state = fs_pin == (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
 		} else {
 			state = fs_pin == (bool)(i2s_tx_descriptor_wb->beatcount & 0x1);
 		}
-		if (state && !DMAC->BUSYCH.bit.BUSYCH1){
+		if (state){
 			dma_resume(1);
 		}
 	}
+	prevfs_tx = fs_pin;
 	
 	if (mic_active){
-		bool state;
-		uint32_t tempReg = DMAC->ACTIVE.reg;
-		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
-		if ((tempReg & DMAC_ACTIVE_ID_Msk) == 0){
-			state = fs_pin == (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
-		} else {
-			state = fs_pin == (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
-		}
-		if (state && !DMAC->BUSYCH.bit.BUSYCH0){
-			// Resume channel
-			dma_resume(0);
-		}
-		
 		if ( (!i2s_rx_descriptor_a->btctrl.valid) && (i2s_rx_descriptor_wb->next_descriptor != i2s_rx_descriptor_b) )	{
 			uint8_t data_shift = (current_resolution_in + 8) >> 4;
 			DMA_BTCTRL_t tempCtrl;
@@ -909,6 +898,22 @@ void audio_task(void)
 			dma_set_descriptor(i2s_rx_descriptor_b, ((mic_buf_size*2) >> data_shift), data_shift);
 		}
 		
+		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+		static bool prevfs_rx;
+		if (!DMAC->BUSYCH.bit.BUSYCH0 && (fs_pin != prevfs_rx)){
+			bool state;
+			uint32_t tempReg = DMAC->ACTIVE.reg;
+			if ((tempReg & DMAC_ACTIVE_ID_Msk) == 0){
+				state = fs_pin != (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
+			} else {
+				state = fs_pin != (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
+			}
+			if (state){
+				// Resume channel
+				dma_resume(0);
+			}
+		}
+		prevfs_rx = fs_pin;
 	}
 }
 
