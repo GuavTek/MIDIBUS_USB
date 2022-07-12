@@ -66,9 +66,30 @@ DMA_Descriptor_t* i2s_tx_descriptor_ra = &base_descriptor[3];
 DMA_Descriptor_t* i2s_tx_descriptor_rb = &transact_descriptor[3];
 DMA_Descriptor_t* i2s_tx_descriptor_rwb = &wrback_descriptor[3];
 
+bool mic_active = false;
+bool spk_active = false;
 
 // For debugging
 volatile Dmac* tempDMA;
+volatile uint64_t dropped_bytes = 0;
+volatile I2s* tempI2S = I2S;
+volatile uint64_t txufl_count = 0;
+volatile uint64_t rxofl_count = 0;
+volatile uint64_t txufr_count = 0;
+volatile uint64_t rxofr_count = 0;
+volatile uint64_t terr_count = 0;
+
+inline void Debug_func() {
+	if ((I2S->INTFLAG.bit.RXOR0) && mic_active && (i2s_rx_descriptor_wb->btctrl.valid == 0)){
+		rxofl_count++;
+	}
+	if ((I2S->INTFLAG.bit.RXOR1) && spk_active && (i2s_tx_descriptor_wb->btctrl.valid == 0)){
+		txufl_count++;
+	}
+	if (DMAC->INTSTATUS.bit.CHINT2){
+		terr_count++;
+	}
+};
 
 int main(void)
 {
@@ -130,38 +151,23 @@ int main(void)
 		tud_task();
 		//tuh_task();
 		
+		Debug_func();
+		
 		audio_task();
 		midi_task();
 		
+		
+		if (PORT->Group[0].IN.reg & (1 << 11)){
+			PORT->Group[0].OUTCLR.reg = 1 << 16;
+		} else {
+			PORT->Group[0].OUTSET.reg = 1 << 16;
+		}
+			
 		static uint32_t timrr = 0;
 		if (timrr < system_ticks/**/)	{
 			timrr = system_ticks + blinkTime;
 			PORT->Group[0].OUTTGL.reg = 1 << 17;
-			
-			
-			// Bruh, transfer error and underrun
-			//if (I2S->INTFLAG.bit.RXRDY0){
-			if (I2S->INTFLAG.bit.TXRDY1){
-			//if (DMAC->CHINTFLAG.bit.TERR){
-				PORT->Group[0].OUTSET.reg = 1 << 16;
-				//I2S->INTFLAG.bit.TXUR1;
-			} else {
-				PORT->Group[0].OUTCLR.reg = 1 << 16;
-			}
-			
-			
 		}
-		
-		/*
-		static uint32_t timrr2 = 0;
-		if (timrr2 < system_ticks)	{
-			timrr2 = system_ticks + blinkTime2;
-			PORT->Group[0].OUTTGL.reg = 1 << 16;
-		}
-		/**/
-		//if (USB->DEVICE.DeviceEndpoint[3].EPINTFLAG.reg){
-		//	PORT->Group[0].OUTSET.reg = 1 << 16;
-		//}
 		
     }
 }
@@ -406,16 +412,19 @@ int8_t mute[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1];       // +1 for master chan
 int16_t volume[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1];    // +1 for master channel 0
 
 // Buffer for microphone data
-bool mic_active = false;
 const uint16_t mic_buf_size = 64;
 int32_t mic_buf[mic_buf_size];
+// easier to read while debugging 16-bit mode
+extern int16_t mic_buf16[mic_buf_size*2] __attribute__ ((alias ("mic_buf")));
 uint32_t* const mic_buf_lo = (uint32_t*) &mic_buf[0];
 uint32_t* const mic_buf_hi = (uint32_t*) &mic_buf[mic_buf_size/2];
 
 // Buffer for speaker data
-bool spk_active = false;
 const uint16_t spk_buf_size = 256;
 int32_t spk_buf[spk_buf_size];
+// easier to read while debugging 16-bit mode
+extern int16_t spk_buf16[spk_buf_size*2] __attribute__ ((alias ("spk_buf")));
+
 uint32_t* const spk_buf_lo = (uint32_t*) &spk_buf[0];
 uint32_t* const spk_buf_hi = (uint32_t*) &spk_buf[spk_buf_size/2];
 

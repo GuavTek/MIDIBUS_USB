@@ -70,7 +70,6 @@ void i2s_init(const uint32_t samplerate){
 							I2S_SERCTRL_EXTEND_ZERO |
 							I2S_SERCTRL_SLOTADJ_LEFT |
 							I2S_SERCTRL_WORDADJ_RIGHT |
-							I2S_SERCTRL_TXSAME_SAME |
 							I2S_SERCTRL_SERMODE_TX;
 	
 	// Set interrupts, Nope use DMA instead
