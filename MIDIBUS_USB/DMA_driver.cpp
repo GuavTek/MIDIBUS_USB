@@ -26,6 +26,8 @@ void dma_init(DMA_Descriptor_t* base_address, DMA_Descriptor_t* wrb_address){
 	DMAC->BASEADDR.reg = (uint32_t) base_address;
 	DMAC->WRBADDR.reg = (uint32_t) wrb_address;
 	
+	NVIC_EnableIRQ(DMAC_IRQn);
+	
 	// Enable DMA
 	DMAC->CTRL.bit.DMAENABLE = 1;
 }

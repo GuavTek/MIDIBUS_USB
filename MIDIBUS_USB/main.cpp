@@ -845,24 +845,29 @@ void audio_task(void)
 				dma_set_descriptor(i2s_tx_descriptor_b, new_data_size, spk_buf_hi, i2s_tx_reg, i2s_tx_descriptor_a, tempCtrl);
 			}
 		}
+		
+		//I2S->INTENSET.bit.TXUR1 = 1;
 	}
 	
-	bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
-	static bool prevfs_tx;
-	if (spk_active && !DMAC->BUSYCH.bit.BUSYCH1 && (prevfs_tx != fs_pin)){
-		// For single DMA
-		bool state;
-		uint32_t tempReg = DMAC->ACTIVE.reg;
-		if ((tempReg & DMAC_ACTIVE_ID_Msk) == 1){
-			state = fs_pin == (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
-		} else {
-			state = fs_pin == (bool)(i2s_tx_descriptor_wb->beatcount & 0x1);
+	if (spk_active){
+		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+		static bool fs_prev;
+		if(!DMAC->BUSYCH.bit.BUSYCH1 && (fs_prev != fs_pin)){
+			bool state;
+			uint32_t tempReg = DMAC->ACTIVE.reg;
+			if ((tempReg & DMAC_ACTIVE_ID_Msk) == 1){
+				state = (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
+			} else {
+				state = (bool)(i2s_tx_descriptor_wb->beatcount & 0x1);
+			}
+			if (state == fs_pin){
+				dma_resume(1);
+				DMAC->CHID.reg = 1;
+				DMAC->CHINTENSET.bit.SUSP = 1;
+			}
 		}
-		if (state){
-			dma_resume(1);
-		}
-	}
-	prevfs_tx = fs_pin;
+		fs_prev = fs_pin;
+	} /**/
 	
 	if (mic_active){
 		if ( (!i2s_rx_descriptor_a->btctrl.valid) && (i2s_rx_descriptor_wb->next_descriptor != i2s_rx_descriptor_b) )	{
@@ -899,22 +904,84 @@ void audio_task(void)
 		}
 		
 		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
-		static bool prevfs_rx;
-		if (!DMAC->BUSYCH.bit.BUSYCH0 && (fs_pin != prevfs_rx)){
+		static bool fs_prev;
+		if (!DMAC->BUSYCH.bit.BUSYCH0 && (fs_prev != fs_pin)){
 			bool state;
 			uint32_t tempReg = DMAC->ACTIVE.reg;
 			if ((tempReg & DMAC_ACTIVE_ID_Msk) == 0){
-				state = fs_pin != (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
+				state = (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
 			} else {
-				state = fs_pin != (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
+				state = (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
 			}
-			if (state){
+			fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+			if (state == fs_pin){
+				// Resume channel
+				dma_resume(0);
+				DMAC->CHID.reg = 0;
+				DMAC->CHINTENSET.bit.SUSP = 1;
+			}
+		}
+		fs_prev = fs_pin;
+		//I2S->INTENSET.bit.RXOR0 = 1;
+	}
+}
+
+void DMAC_Handler(){
+	uint32_t tempFlag = DMAC->INTPEND.reg;
+	switch(tempFlag & DMAC_INTPEND_ID_Msk){
+		case 0:
+			dma_resume(0);
+			DMAC->CHID.reg = 0;
+			DMAC->CHINTENCLR.bit.SUSP = 1;
+			break;
+		case 1:
+			dma_resume(1);
+			DMAC->CHID.reg = 1;
+			DMAC->CHINTENCLR.bit.SUSP = 1;
+			break;
+	}
+}
+
+void I2S_Handler(){
+	//fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+	
+	/*
+	if (spk_data_new != 0){
+		I2S->INTFLAG.bit.TXUR1 = 1;
+		if(!DMAC->BUSYCH.bit.BUSYCH1){
+			bool state;
+			uint32_t tempReg = DMAC->ACTIVE.reg;
+			if ((tempReg & DMAC_ACTIVE_ID_Msk) == 1){
+				state = (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
+			} else {
+				state = (bool)(i2s_tx_descriptor_wb->beatcount & 0x1);
+			}
+			if (state == fs_pin){
+				dma_resume(1);
+			}
+		}
+	} else {
+		I2S->INTENCLR.bit.TXUR1 = 1;
+	}
+	
+	if (mic_active){
+		I2S->INTFLAG.bit.RXOR0 = 1;
+		if (!DMAC->BUSYCH.bit.BUSYCH0){
+			bool state;
+			uint32_t tempReg = DMAC->ACTIVE.reg;
+			if ((tempReg & DMAC_ACTIVE_ID_Msk) == 0){
+				state = (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
+			} else {
+				state = (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
+			}
+			if (state == fs_pin){
 				// Resume channel
 				dma_resume(0);
 			}
 		}
-		prevfs_rx = fs_pin;
-	}
+	} else {
+		I2S->INTENCLR.bit.RXOR0 = 1;
+	} /**/
 }
 
 void USB_Handler(void){
