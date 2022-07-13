@@ -24,20 +24,8 @@ void audio_task(void);
 void midi_task(void);
 void audio_dma_init();
 
-void MIDI2_CAN_voice_handler (struct MIDI2_voice_t* msg);
-void MIDI2_CAN_data128_handler (struct MIDI2_data128_t* msg);
-void MIDI2_CAN_data64_handler (struct MIDI2_data64_t* msg);
-void MIDI2_CAN_com_handler (struct MIDI2_com_t* msg);
-void MIDI2_CAN_util_handler (struct MIDI2_util_t* msg);
-void MIDI1_CAN_handler (struct MIDI1_msg_t* msg);
 void MIDI_CAN_UMP_handler(struct MIDI_UMP_t* msg);
-
-void MIDI2_USB_voice_handler (struct MIDI2_voice_t* msg);
-void MIDI2_USB_data128_handler (struct MIDI2_data128_t* msg);
-void MIDI2_USB_data64_handler (struct MIDI2_data64_t* msg);
-void MIDI2_USB_com_handler (struct MIDI2_com_t* msg);
-void MIDI2_USB_util_handler (struct MIDI2_util_t* msg);
-void MIDI1_USB_handler (struct MIDI1_msg_t* msg);
+void MIDI_USB_UMP_handler(struct MIDI_UMP_t* msg);
 
 MIDI_C MIDI_USB(1);
 MIDI_C MIDI_CAN(2);
@@ -105,22 +93,8 @@ int main(void)
 	USB_Init();
 	tusb_init();
 
-	MIDI_CAN.Set_handler(MIDI2_CAN_voice_handler);
-	MIDI_CAN.Set_handler(MIDI2_CAN_data128_handler);
-	MIDI_CAN.Set_handler(MIDI2_CAN_data64_handler);
-	MIDI_CAN.Set_handler(MIDI2_CAN_com_handler);
-	MIDI_CAN.Set_handler(MIDI2_CAN_util_handler);
-	MIDI_CAN.Set_handler(MIDI1_CAN_handler);
-	
 	MIDI_CAN.Set_handler(MIDI_CAN_UMP_handler);
-	
-	MIDI_USB.Set_handler(MIDI2_USB_voice_handler);
-	MIDI_USB.Set_handler(MIDI2_USB_data128_handler);
-	MIDI_USB.Set_handler(MIDI2_USB_data64_handler);
-	MIDI_USB.Set_handler(MIDI2_USB_com_handler);
-	MIDI_USB.Set_handler(MIDI2_USB_util_handler);
-	MIDI_USB.Set_handler(MIDI1_USB_handler);
-	/**/
+	MIDI_USB.Set_handler(MIDI_USB_UMP_handler);
 	
 	NVIC_EnableIRQ(SERCOM5_IRQn);
 	system_interrupt_enable_global();
@@ -208,115 +182,12 @@ void MIDI_CAN_UMP_handler(struct MIDI_UMP_t* msg){
 	}
 }
 
-void MIDI2_CAN_voice_handler (struct MIDI2_voice_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		// Voice packages are MIDI 2.0 only?
-		return;
-	}
-	
-	char tempData[8];
-	uint8_t length;
-	length = MIDI_USB.Encode(tempData, msg);
-	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
-}
-
-void MIDI2_CAN_data128_handler (struct MIDI2_data128_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		// 128 bit sysex messages are MIDI 2.0 only
-		return;
-	}
-	
-	char tempData[16];
-	uint8_t length;
-	length = MIDI_USB.Encode(tempData, msg);
-	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
-}
-
-void MIDI2_CAN_data64_handler (struct MIDI2_data64_t* msg){
-	char tempData[8];
-	uint8_t length;
-	length = MIDI_USB.Encode(tempData, msg, MIDI_USB.Get_Version());
-	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
-}
-
-void MIDI2_CAN_com_handler (struct MIDI2_com_t* msg){
-	char tempData[4];
-	uint8_t length;
-	length = MIDI_USB.Encode(tempData, msg, MIDI_USB.Get_Version());
-	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
-}
-
-void MIDI2_CAN_util_handler (struct MIDI2_util_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		// Utility messages are MIDI 2.0 only
-		return;
-	}
-	
-	char tempData[4];
-	uint8_t length;
-	length = MIDI_USB.Encode(tempData, msg);
-	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
-}
-
-void MIDI1_CAN_handler (struct MIDI1_msg_t* msg){
-	char tempData[4];
-	uint8_t length;
-	length = MIDI_USB.Encode(tempData, msg, MIDI_USB.Get_Version());
-	tud_midi_stream_write(0, (uint8_t*)(tempData), length);
-	//PORT->Group[0].OUTSET.reg = 1 << 16;
-}
-
 // Handle USB midi data
-void MIDI2_USB_voice_handler (struct MIDI2_voice_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		return;
-	}
-	char tempData[8];
-	
-}
-
-void MIDI2_USB_data128_handler (struct MIDI2_data128_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		return;
-	}
+void MIDI_USB_UMP_handler(struct MIDI_UMP_t* msg){
 	char tempData[16];
-	
-}
-
-void MIDI2_USB_data64_handler (struct MIDI2_data64_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		return;
-	}
-	char tempData[8];
-	
-}
-
-void MIDI2_USB_com_handler (struct MIDI2_com_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		return;
-	}
-	char tempData[4];
-	
-}
-
-void MIDI2_USB_util_handler (struct MIDI2_util_t* msg){
-	if (MIDI_USB.Get_Version() == 1){
-		return;
-	}
-	char tempData[4];
-	uint8_t length;
-	length = MIDI_CAN.Encode(tempData, msg);
-	CAN_Tx_msg_t txMsg;
-	txMsg.dataLengthCode = CAN.Get_DLC(length);
-	txMsg.payload = tempData;
-	txMsg.id = midiID;
-	CAN.Transmit_Message(&txMsg, 2);
-}
-
-void MIDI1_USB_handler (struct MIDI1_msg_t* msg){
-	char tempData[4];
 	uint8_t length;
 	length = MIDI_CAN.Encode(tempData, msg, 2);
+	
 	CAN_Tx_msg_t txMsg;
 	txMsg.dataLengthCode = CAN.Get_DLC(length);
 	txMsg.payload = tempData;
@@ -844,7 +715,6 @@ void audio_task(void)
 			}
 		}
 		
-		//I2S->INTENSET.bit.TXUR1 = 1;
 	}
 	
 	if (spk_active){
@@ -878,7 +748,7 @@ void audio_task(void)
 			DMAC->CHINTENSET.bit.SUSP = 1;
 		}
 		/**/
-	} /**/
+	}
 	
 	if (mic_active){
 		if ( (!i2s_rx_descriptor_a->btctrl.valid) && (i2s_rx_descriptor_wb->next_descriptor != i2s_rx_descriptor_b) )	{
@@ -933,7 +803,6 @@ void audio_task(void)
 			}
 		}
 		fs_prev = fs_pin;
-		//I2S->INTENSET.bit.RXOR0 = 1;
 		
 		// Dual DMA:
 		/*
