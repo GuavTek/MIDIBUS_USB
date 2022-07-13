@@ -865,6 +865,19 @@ void audio_task(void)
 			}
 		}
 		fs_prev = fs_pin;
+		
+		// Dual DMA:
+		/*
+		if (fs_pin) {
+			dma_resume(2);
+			DMAC->CHID.reg = 2;
+			DMAC->CHINTENSET.bit.SUSP = 1;
+		} else {
+			dma_resume(3);
+			DMAC->CHID.reg = 3;
+			DMAC->CHINTENSET.bit.SUSP = 1;
+		}
+		/**/
 	} /**/
 	
 	if (mic_active){
@@ -921,22 +934,19 @@ void audio_task(void)
 		}
 		fs_prev = fs_pin;
 		//I2S->INTENSET.bit.RXOR0 = 1;
-	}
-}
-
-void DMAC_Handler(){
-	uint32_t tempFlag = DMAC->INTPEND.reg;
-	switch(tempFlag & DMAC_INTPEND_ID_Msk){
-		case 0:
+		
+		// Dual DMA:
+		/*
+		if (fs_pin) {
 			dma_resume(0);
 			DMAC->CHID.reg = 0;
-			DMAC->CHINTENCLR.bit.SUSP = 1;
-			break;
-		case 1:
+			DMAC->CHINTENSET.bit.SUSP = 1;
+		} else {
 			dma_resume(1);
 			DMAC->CHID.reg = 1;
-			DMAC->CHINTENCLR.bit.SUSP = 1;
-			break;
+			DMAC->CHINTENSET.bit.SUSP = 1;
+		}
+		/**/
 	}
 }
 
