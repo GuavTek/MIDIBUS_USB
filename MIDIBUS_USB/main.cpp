@@ -64,7 +64,7 @@ bool mic_active = false;
 bool spk_active = false;
 
 // For debugging
-volatile Dmac* tempDMA;
+volatile Dmac* tempDMA = DMAC;;
 volatile uint64_t dropped_bytes = 0;
 volatile I2s* tempI2S = I2S;
 volatile uint64_t txufl_count = 0;
@@ -135,8 +135,6 @@ int main(void)
 	temp[2] = 70;
 	//CAN.Transmit_Message(&message, 2);
 	
-	
-			tempDMA = DMAC;
     while (1) 
     {
 		CAN.State_Machine();
@@ -942,46 +940,13 @@ void DMAC_Handler(){
 	}
 }
 
-void I2S_Handler(){
-	//fs_pin = PORT->Group[0].IN.reg & (1 << 11);
+void DMAC_Handler(){
+	uint32_t tempFlag = DMAC->INTPEND.reg;
+	tempFlag &= DMAC_INTPEND_ID_Msk;
 	
-	/*
-	if (spk_data_new != 0){
-		I2S->INTFLAG.bit.TXUR1 = 1;
-		if(!DMAC->BUSYCH.bit.BUSYCH1){
-			bool state;
-			uint32_t tempReg = DMAC->ACTIVE.reg;
-			if ((tempReg & DMAC_ACTIVE_ID_Msk) == 1){
-				state = (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
-			} else {
-				state = (bool)(i2s_tx_descriptor_wb->beatcount & 0x1);
-			}
-			if (state == fs_pin){
-				dma_resume(1);
-			}
-		}
-	} else {
-		I2S->INTENCLR.bit.TXUR1 = 1;
-	}
-	
-	if (mic_active){
-		I2S->INTFLAG.bit.RXOR0 = 1;
-		if (!DMAC->BUSYCH.bit.BUSYCH0){
-			bool state;
-			uint32_t tempReg = DMAC->ACTIVE.reg;
-			if ((tempReg & DMAC_ACTIVE_ID_Msk) == 0){
-				state = (bool)(tempReg & (0x1 << DMAC_ACTIVE_BTCNT_Pos));
-			} else {
-				state = (bool)(i2s_rx_descriptor_wb->beatcount & 0x1);
-			}
-			if (state == fs_pin){
-				// Resume channel
-				dma_resume(0);
-			}
-		}
-	} else {
-		I2S->INTENCLR.bit.RXOR0 = 1;
-	} /**/
+	dma_resume(tempFlag);
+	DMAC->CHID.reg = tempFlag;
+	DMAC->CHINTENCLR.bit.SUSP = 1;
 }
 
 void USB_Handler(void){
