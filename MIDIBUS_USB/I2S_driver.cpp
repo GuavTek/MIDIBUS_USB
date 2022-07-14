@@ -28,7 +28,6 @@ void i2s_init(const uint32_t samplerate){
 	PORT->Group[0].DIRCLR.reg = (1 << 11);
 	PORT->Group[0].PINCFG[11].bit.INEN = 1;
 	
-	
 	// Enable peripheral clocks
 	PM->APBCMASK.reg |= PM_APBCMASK_I2S;
 	
@@ -54,6 +53,7 @@ void i2s_init(const uint32_t samplerate){
 	// Configure Serializers
 	I2S->SERCTRL[0].reg =	I2S_SERCTRL_CLKSEL_CLK0 |
 							I2S_SERCTRL_MONO_STEREO |
+							I2S_SERCTRL_DMA_MULTIPLE |
 							I2S_SERCTRL_BITREV_MSBIT |
 							I2S_SERCTRL_DATASIZE_32 |
 							I2S_SERCTRL_EXTEND_ZERO	|
@@ -63,6 +63,7 @@ void i2s_init(const uint32_t samplerate){
 							
 	I2S->SERCTRL[1].reg =	I2S_SERCTRL_CLKSEL_CLK0 |
 							I2S_SERCTRL_MONO_STEREO |
+							I2S_SERCTRL_DMA_MULTIPLE |
 							I2S_SERCTRL_BITREV_MSBIT |
 							I2S_SERCTRL_DATASIZE_32 |
 							I2S_SERCTRL_EXTEND_ZERO |
@@ -73,7 +74,7 @@ void i2s_init(const uint32_t samplerate){
 	
 	// Set interrupts, Nope use DMA instead
 	I2S->INTENSET.bit.RXRDY0 = 0;// 1;
-	I2S->INTENSET.bit.TXRDY1 = 0;// 1;
+	I2S->INTENSET.bit.TXUR1 = 0;// 1;
 	
 	i2s_fs_state = I2S_FS_LEFT_MAYBE;
 	
@@ -98,7 +99,7 @@ void i2s_set_freq(uint32_t samplerate) {
 	
 	uint32_t tmpldr;
 	uint8_t  tmpldrfrac;
-	uint32_t refclk = 32768;
+	uint32_t refclk = 32768;// + 108;
 	
 	/* Calculate LDRFRAC and LDR */
 	uint64_t output_frequency = samplerate * 384;

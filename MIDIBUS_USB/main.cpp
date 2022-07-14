@@ -36,23 +36,29 @@ uint32_t blinkTime2 = 100;
 volatile uint32_t system_ticks = 0;
 
 // DMA descriptors
-DMA_Descriptor_t base_descriptor[2] __attribute__ ((aligned(16)));
-DMA_Descriptor_t wrback_descriptor[2] __attribute__ ((aligned(16)));
-DMA_Descriptor_t transact_descriptor[2] __attribute__ ((aligned(16)));
+DMA_Descriptor_t base_descriptor[4] __attribute__ ((aligned(16)));
+DMA_Descriptor_t wrback_descriptor[4] __attribute__ ((aligned(16)));
+DMA_Descriptor_t transact_descriptor[4] __attribute__ ((aligned(16)));
 
-DMA_Descriptor_t* i2s_rx_descriptor_a = &base_descriptor[0];
-DMA_Descriptor_t* i2s_rx_descriptor_b = &transact_descriptor[0];
-DMA_Descriptor_t* i2s_rx_descriptor_wb = &wrback_descriptor[0];
+DMA_Descriptor_t* i2s_lrx_descriptor_a = &base_descriptor[0];
+DMA_Descriptor_t* i2s_lrx_descriptor_b = &transact_descriptor[0];
+DMA_Descriptor_t* i2s_lrx_descriptor_wb = &wrback_descriptor[0];
+DMA_Descriptor_t* i2s_rrx_descriptor_a = &base_descriptor[1];
+DMA_Descriptor_t* i2s_rrx_descriptor_b = &transact_descriptor[1];
+DMA_Descriptor_t* i2s_rrx_descriptor_wb = &wrback_descriptor[1];
 
-DMA_Descriptor_t* i2s_tx_descriptor_a = &base_descriptor[1];
-DMA_Descriptor_t* i2s_tx_descriptor_b = &transact_descriptor[1];
-DMA_Descriptor_t* i2s_tx_descriptor_wb = &wrback_descriptor[1];
+DMA_Descriptor_t* i2s_ltx_descriptor_a = &base_descriptor[2];
+DMA_Descriptor_t* i2s_ltx_descriptor_b = &transact_descriptor[2];
+DMA_Descriptor_t* i2s_ltx_descriptor_wb = &wrback_descriptor[2];
+DMA_Descriptor_t* i2s_rtx_descriptor_a = &base_descriptor[3];
+DMA_Descriptor_t* i2s_rtx_descriptor_b = &transact_descriptor[3];
+DMA_Descriptor_t* i2s_rtx_descriptor_wb = &wrback_descriptor[3];
 
 bool mic_active = false;
 bool spk_active = false;
 
 // For debugging
-volatile Dmac* tempDMA = DMAC;;
+volatile Dmac* tempDMA = DMAC;
 volatile uint64_t dropped_bytes = 0;
 volatile I2s* tempI2S = I2S;
 volatile uint64_t txufl_count = 0;
@@ -62,10 +68,10 @@ volatile uint64_t rxofr_count = 0;
 volatile uint64_t terr_count = 0;
 
 inline void Debug_func() {
-	if ((I2S->INTFLAG.bit.RXOR0) && mic_active && (i2s_rx_descriptor_wb->btctrl.valid == 0)){
+	if ((I2S->INTFLAG.bit.RXOR0) && mic_active && (i2s_lrx_descriptor_wb->btctrl.valid == 0)){
 		rxofl_count++;
 	}
-	if ((I2S->INTFLAG.bit.RXOR1) && spk_active && (i2s_tx_descriptor_wb->btctrl.valid == 0)){
+	if ((I2S->INTFLAG.bit.RXOR1) && spk_active && (i2s_ltx_descriptor_wb->btctrl.valid == 0)){
 		txufl_count++;
 	}
 	if (DMAC->INTSTATUS.bit.CHINT2){
@@ -301,7 +307,7 @@ CFG_TUD_AUDIO_FUNC_1_FORMAT_2_RESOLUTION_RX};
 uint8_t current_resolution_out;
 uint8_t current_resolution_in;
 
-const struct DMA_Channel_config dma_i2s_tx_conf = {
+const struct DMA_Channel_config dma_i2s_ltx_conf = {
 	.int_enable_complete = 0,
 	.int_enable_suspend = 0,
 	.int_enable_error = 0,
@@ -310,7 +316,25 @@ const struct DMA_Channel_config dma_i2s_tx_conf = {
 	.arbitration_lvl = 2
 };
 
-const struct DMA_Channel_config dma_i2s_rx_conf = {
+const struct DMA_Channel_config dma_i2s_rtx_conf = {
+	.int_enable_complete = 0,
+	.int_enable_suspend = 0,
+	.int_enable_error = 0,
+	.trigger_src = I2S_DMAC_ID_RX_1,
+	.trigger_action = DMAC_CHCTRLB_TRIGACT_BEAT_Val,
+	.arbitration_lvl = 2
+};
+
+const struct DMA_Channel_config dma_i2s_lrx_conf = {
+	.int_enable_complete = 0,
+	.int_enable_suspend = 0,
+	.int_enable_error = 0,
+	.trigger_src = I2S_DMAC_ID_TX_0,
+	.trigger_action = DMAC_CHCTRLB_TRIGACT_BEAT_Val,
+	.arbitration_lvl = 2
+};
+
+const struct DMA_Channel_config dma_i2s_rrx_conf = {
 	.int_enable_complete = 0,
 	.int_enable_suspend = 0,
 	.int_enable_error = 0,
@@ -512,7 +536,8 @@ bool tud_audio_set_itf_close_EP_cb(uint8_t rhport, tusb_control_request_t const 
 		//current_resolution_out = 0;
 		blinkTime = 100;
 		// Detach DMA
-		dma_suspend(1);
+		dma_suspend(2);
+		dma_suspend(3);
 		spk_active = false;
 		// Clear DMA transactions?
 	}
@@ -522,6 +547,7 @@ bool tud_audio_set_itf_close_EP_cb(uint8_t rhport, tusb_control_request_t const 
 		blinkTime2 = 100;
 		// Detach DMA
 		dma_suspend(0);
+		dma_suspend(1);
 		mic_active = false;
 		// Clear DMA transactions?
 	}
@@ -545,8 +571,10 @@ bool tud_audio_set_itf_cb(uint8_t rhport, tusb_control_request_t const * p_reque
 		
 		// Clear buffer when streaming format is changed
 		spk_data_new = 0;
-		i2s_tx_descriptor_a->btctrl.valid = 0;
-		i2s_tx_descriptor_b->btctrl.valid = 0;
+		i2s_ltx_descriptor_a->btctrl.valid = 0;
+		i2s_ltx_descriptor_b->btctrl.valid = 0;
+		i2s_rtx_descriptor_a->btctrl.valid = 0;
+		i2s_rtx_descriptor_b->btctrl.valid = 0;
 		spk_active = true;
 	}
 	
@@ -557,8 +585,10 @@ bool tud_audio_set_itf_cb(uint8_t rhport, tusb_control_request_t const * p_reque
 		// Attach DMA
 		//dma_resume(0);
 		
-		i2s_rx_descriptor_a->btctrl.valid = 0;
-		i2s_rx_descriptor_b->btctrl.valid = 0;
+		i2s_lrx_descriptor_a->btctrl.valid = 0;
+		i2s_lrx_descriptor_b->btctrl.valid = 0;
+		i2s_rrx_descriptor_a->btctrl.valid = 0;
+		i2s_rrx_descriptor_b->btctrl.valid = 0;
 		mic_active = true;
 	}
 
@@ -577,6 +607,7 @@ bool tud_audio_rx_done_pre_read_cb(uint8_t rhport, uint16_t n_bytes_received, ui
 	return true;
 }
 
+/*
 bool tud_audio_rx_done_post_read_cb(uint8_t rhport, uint16_t n_bytes_received, uint8_t func_id, uint8_t ep_out, uint8_t cur_alt_setting)
 {
 	(void)rhport;
@@ -603,6 +634,7 @@ bool tud_audio_tx_done_pre_load_cb(uint8_t rhport, uint8_t itf, uint8_t ep_in, u
 	// This callback could be used to fill microphone data separately
 	return true;
 }
+*/
 
 //--------------------------------------------------------------------+
 // AUDIO Task
@@ -627,91 +659,114 @@ void audio_dma_init(){
 	tempCtrl.evosel = DMAC_BTCTRL_EVOSEL_BEAT_Val;
 	tempCtrl.blockact = DMAC_BTCTRL_BLOCKACT_NOACT_Val;
 	tempCtrl.beatsize = DMAC_BTCTRL_BEATSIZE_HWORD_Val;
-	tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_SRC_Val;
+	tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_DST_Val;
+	tempCtrl.stepsize = DMAC_BTCTRL_STEPSIZE_X2_Val;
 	tempCtrl.dstinc = 1;
 	tempCtrl.srcinc = 0;
 	
 	// RX
-	dma_set_descriptor(i2s_rx_descriptor_a, mic_buf_size, i2s_rx_reg, mic_buf_lo, i2s_rx_descriptor_b, tempCtrl);
-	dma_set_descriptor(i2s_rx_descriptor_b, mic_buf_size, i2s_rx_reg, mic_buf_hi, i2s_rx_descriptor_a, tempCtrl);
+	uint32_t* right_buf = (uint32_t*) ((uint32_t) mic_buf_lo + 2);
+	dma_set_descriptor(i2s_lrx_descriptor_a, mic_buf_size, i2s_rx_reg, mic_buf_lo, i2s_lrx_descriptor_b, tempCtrl);
+	dma_set_descriptor(i2s_rrx_descriptor_a, mic_buf_size, i2s_rx_reg, right_buf, i2s_rrx_descriptor_b, tempCtrl);
+	right_buf = (uint32_t*) ((uint32_t) mic_buf_hi + 2);
+	dma_set_descriptor(i2s_lrx_descriptor_b, mic_buf_size, i2s_rx_reg, mic_buf_hi, i2s_lrx_descriptor_a, tempCtrl);
+	dma_set_descriptor(i2s_rrx_descriptor_b, mic_buf_size, i2s_rx_reg, right_buf, i2s_rrx_descriptor_a, tempCtrl);
 		
-	tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_DST_Val;
+	tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_SRC_Val;
 	tempCtrl.srcinc = 1;
 	tempCtrl.dstinc = 0;
 	
 	// TX
-	dma_set_descriptor(i2s_tx_descriptor_a, spk_buf_size, spk_buf_lo, i2s_tx_reg, i2s_tx_descriptor_b, tempCtrl);
-	dma_set_descriptor(i2s_tx_descriptor_b, spk_buf_size, spk_buf_hi, i2s_tx_reg, i2s_tx_descriptor_a, tempCtrl);
+	right_buf = (uint32_t*) ((uint32_t) spk_buf_lo + 2);
+	dma_set_descriptor(i2s_ltx_descriptor_a, spk_buf_size, spk_buf_lo, i2s_tx_reg, i2s_ltx_descriptor_b, tempCtrl);
+	dma_set_descriptor(i2s_rtx_descriptor_a, spk_buf_size, right_buf, i2s_tx_reg, i2s_rtx_descriptor_b, tempCtrl);
+	right_buf = (uint32_t*) ((uint32_t) spk_buf_hi + 2);
+	dma_set_descriptor(i2s_ltx_descriptor_b, spk_buf_size, spk_buf_hi, i2s_tx_reg, i2s_ltx_descriptor_a, tempCtrl);
+	dma_set_descriptor(i2s_rtx_descriptor_b, spk_buf_size, right_buf, i2s_tx_reg, i2s_rtx_descriptor_a, tempCtrl);
 	
-	dma_attach(0, dma_i2s_rx_conf);
+	dma_attach(0, dma_i2s_lrx_conf);
 	dma_suspend(0);
-	dma_attach(1, dma_i2s_tx_conf);
+	dma_attach(1, dma_i2s_rrx_conf);
 	dma_suspend(1);
+	dma_attach(2, dma_i2s_ltx_conf);
+	dma_suspend(2);
+	dma_attach(3, dma_i2s_rtx_conf);
+	dma_suspend(3);
 }
 
 void audio_task(void)
 {
 	
 	// Is DMAC processing descriptor?
-	if (i2s_rx_descriptor_wb->next_descriptor == i2s_rx_descriptor_b){
-		i2s_rx_descriptor_a->btctrl.valid = 0;
-	} else if (i2s_rx_descriptor_wb->next_descriptor == i2s_rx_descriptor_a){
-		i2s_rx_descriptor_b->btctrl.valid = 0;
+	if ((i2s_lrx_descriptor_wb->next_descriptor == i2s_lrx_descriptor_b)&&(i2s_rrx_descriptor_wb->next_descriptor == i2s_rrx_descriptor_b)){
+		i2s_lrx_descriptor_a->btctrl.valid = 0;
+		i2s_rrx_descriptor_a->btctrl.valid = 0;
+	} else if ((i2s_lrx_descriptor_wb->next_descriptor == i2s_lrx_descriptor_a)&&(i2s_rrx_descriptor_wb->next_descriptor == i2s_rrx_descriptor_a)){
+		i2s_lrx_descriptor_b->btctrl.valid = 0;
+		i2s_rrx_descriptor_b->btctrl.valid = 0;
 	}
 	
-	if (i2s_tx_descriptor_wb->next_descriptor == i2s_tx_descriptor_b){
-		i2s_tx_descriptor_a->btctrl.valid = 0;
-	} else if (i2s_tx_descriptor_wb->next_descriptor == i2s_tx_descriptor_a){
-		i2s_tx_descriptor_b->btctrl.valid = 0;
+	if ((i2s_ltx_descriptor_wb->next_descriptor == i2s_ltx_descriptor_b)&&(i2s_rtx_descriptor_wb->next_descriptor == i2s_rtx_descriptor_b)){
+		i2s_ltx_descriptor_a->btctrl.valid = 0;
+		i2s_rtx_descriptor_a->btctrl.valid = 0;
+	} else if ((i2s_ltx_descriptor_wb->next_descriptor == i2s_ltx_descriptor_a)&&(i2s_rtx_descriptor_wb->next_descriptor == i2s_rtx_descriptor_a)){
+		i2s_ltx_descriptor_b->btctrl.valid = 0;
+		i2s_rtx_descriptor_b->btctrl.valid = 0;
 	}
 	/**/
 	
 	// Speaker data waiting?
 	if (spk_data_new != 0){
 		// Check if buffer is valid, and is not being processed
-		if ( (!i2s_tx_descriptor_a->btctrl.valid) && (i2s_tx_descriptor_wb->next_descriptor != i2s_tx_descriptor_b) )	{
+		if ( (!i2s_rtx_descriptor_a->btctrl.valid) && (i2s_rtx_descriptor_wb->next_descriptor != i2s_rtx_descriptor_b) )	{
 			uint8_t data_shift = (current_resolution_out + 8) >> 4;
 			DMA_BTCTRL_t tempCtrl;
 			tempCtrl.word = 0;
 			tempCtrl.evosel = DMAC_BTCTRL_EVOSEL_BEAT_Val;
 			tempCtrl.blockact = DMAC_BTCTRL_BLOCKACT_NOACT_Val;
-			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_DST_Val;
+			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_SRC_Val;
+			tempCtrl.stepsize = DMAC_BTCTRL_STEPSIZE_X2_Val;
 			tempCtrl.beatsize = data_shift;
 			tempCtrl.srcinc = 1;
 			tempCtrl.valid = 1;
 	
 			uint16_t new_data_size;
 			new_data_size = tud_audio_read(spk_buf_lo, spk_buf_size * 2 );
-			spk_data_new -= new_data_size;
-			new_data_size >>= data_shift;
+			new_data_size >>= data_shift + 1;
+			spk_data_new -= new_data_size << (data_shift + 1);
 			
 			if (new_data_size == 0){
 				dropped_bytes += spk_data_new;
 				spk_data_new = 0;
 			} else {
-				dma_set_descriptor(i2s_tx_descriptor_a, new_data_size, spk_buf_lo, i2s_tx_reg, i2s_tx_descriptor_b, tempCtrl);
+				uint32_t* right_buf = (uint32_t*) ((uint32_t) spk_buf_lo + 2*data_shift);
+				dma_set_descriptor(i2s_ltx_descriptor_a, new_data_size, spk_buf_lo, i2s_tx_reg, i2s_ltx_descriptor_b, tempCtrl);
+				dma_set_descriptor(i2s_rtx_descriptor_a, new_data_size, right_buf, i2s_tx_reg, i2s_rtx_descriptor_b, tempCtrl);
 			}
-		} else if ( (!i2s_tx_descriptor_b->btctrl.valid) && (i2s_tx_descriptor_wb->next_descriptor != i2s_tx_descriptor_a) ){
+		} else if ( (!i2s_rtx_descriptor_b->btctrl.valid) && (i2s_rtx_descriptor_wb->next_descriptor != i2s_rtx_descriptor_a) ){
 			uint8_t data_shift = (current_resolution_out + 8) >> 4;
 			DMA_BTCTRL_t tempCtrl;
 			tempCtrl.word = 0;
 			tempCtrl.evosel = DMAC_BTCTRL_EVOSEL_BEAT_Val;
 			tempCtrl.blockact = DMAC_BTCTRL_BLOCKACT_NOACT_Val;
-			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_DST_Val;
+			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_SRC_Val;
+			tempCtrl.stepsize = DMAC_BTCTRL_STEPSIZE_X2_Val;
 			tempCtrl.beatsize = data_shift;
 			tempCtrl.srcinc = 1;
 			tempCtrl.valid = 1;
 			
 			uint16_t new_data_size;
 			new_data_size = tud_audio_read(spk_buf_hi, spk_buf_size * 2 );
-			spk_data_new -= new_data_size;
-			new_data_size >>= data_shift;
+			new_data_size >>= data_shift + 1;
+			spk_data_new -= new_data_size << (data_shift + 1);
 			
 			if (new_data_size == 0){
 				dropped_bytes += spk_data_new;
 				spk_data_new = 0;
 			} else {
-				dma_set_descriptor(i2s_tx_descriptor_b, new_data_size, spk_buf_hi, i2s_tx_reg, i2s_tx_descriptor_a, tempCtrl);
+				uint32_t* right_buf = (uint32_t*) ((uint32_t) spk_buf_hi + 2*data_shift);
+				dma_set_descriptor(i2s_ltx_descriptor_b, new_data_size, spk_buf_hi, i2s_tx_reg, i2s_ltx_descriptor_a, tempCtrl);
+				dma_set_descriptor(i2s_rtx_descriptor_b, new_data_size, right_buf, i2s_tx_reg, i2s_rtx_descriptor_a, tempCtrl);
 			}
 		}
 		
@@ -720,6 +775,7 @@ void audio_task(void)
 	if (spk_active){
 		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
 		static bool fs_prev;
+		/*
 		if(!DMAC->BUSYCH.bit.BUSYCH1 && (fs_prev != fs_pin)){
 			bool state;
 			uint32_t tempReg = DMAC->ACTIVE.reg;
@@ -734,58 +790,66 @@ void audio_task(void)
 				DMAC->CHINTENSET.bit.SUSP = 1;
 			}
 		}
-		fs_prev = fs_pin;
-		
+		/**/
 		// Dual DMA:
-		/*
-		if (fs_pin) {
+		if (fs_pin != fs_prev){
+		if (!fs_pin) {
 			dma_resume(2);
-			DMAC->CHID.reg = 2;
-			DMAC->CHINTENSET.bit.SUSP = 1;
+			//DMAC->CHID.reg = 2;
+			//DMAC->CHINTENSET.bit.SUSP = 1;
 		} else {
 			dma_resume(3);
-			DMAC->CHID.reg = 3;
-			DMAC->CHINTENSET.bit.SUSP = 1;
+			//DMAC->CHID.reg = 3;
+			//DMAC->CHINTENSET.bit.SUSP = 1;
 		}
+		}
+		fs_prev = fs_pin;
 		/**/
 	}
 	
 	if (mic_active){
-		if ( (!i2s_rx_descriptor_a->btctrl.valid) && (i2s_rx_descriptor_wb->next_descriptor != i2s_rx_descriptor_b) )	{
+		if ( (!i2s_rrx_descriptor_a->btctrl.valid) && (i2s_rrx_descriptor_wb->next_descriptor != i2s_rrx_descriptor_b) )	{
 			uint8_t data_shift = (current_resolution_in + 8) >> 4;
 			DMA_BTCTRL_t tempCtrl;
 			tempCtrl.word = 0;
 			tempCtrl.evosel = DMAC_BTCTRL_EVOSEL_BEAT_Val;
 			tempCtrl.blockact = DMAC_BTCTRL_BLOCKACT_NOACT_Val;
 			tempCtrl.beatsize = data_shift;
-			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_SRC_Val;
+			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_DST_Val;
+			tempCtrl.stepsize = DMAC_BTCTRL_STEPSIZE_X2_Val;
 			tempCtrl.dstinc = 1;
 			tempCtrl.valid = 1;
 			
 			tud_audio_write(mic_buf_lo, mic_buf_size * 2 );
 			
 			
-			//dma_set_descriptor(i2s_rx_descriptor_a, ((mic_buf_size*2) >> data_shift), i2s_rx_reg, mic_buf_lo, i2s_rx_descriptor_b, tempCtrl);
-			dma_set_descriptor(i2s_rx_descriptor_a, ((mic_buf_size*2) >> data_shift), data_shift);
-		} else if ( (!i2s_rx_descriptor_b->btctrl.valid) && (i2s_rx_descriptor_wb->next_descriptor != i2s_rx_descriptor_a) ){
+			uint32_t* right_buf = (uint32_t*) ((uint32_t) mic_buf_lo + 2*data_shift);
+			dma_set_descriptor(i2s_lrx_descriptor_a, ((mic_buf_size) >> data_shift), i2s_rx_reg, mic_buf_lo, i2s_lrx_descriptor_b, tempCtrl);
+			dma_set_descriptor(i2s_rrx_descriptor_a, ((mic_buf_size) >> data_shift), i2s_rx_reg, right_buf, i2s_rrx_descriptor_b, tempCtrl);
+			//dma_set_descriptor(i2s_rx_descriptor_a, ((mic_buf_size*2) >> data_shift), data_shift);
+		} else if ( (!i2s_rrx_descriptor_b->btctrl.valid) && (i2s_rrx_descriptor_wb->next_descriptor != i2s_rrx_descriptor_a) ){
 			uint8_t data_shift = (current_resolution_in + 8) >> 4;
 			DMA_BTCTRL_t tempCtrl;
 			tempCtrl.word = 0;
 			tempCtrl.evosel = DMAC_BTCTRL_EVOSEL_BEAT_Val;
 			tempCtrl.blockact = DMAC_BTCTRL_BLOCKACT_NOACT_Val;
 			tempCtrl.beatsize = data_shift;
-			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_SRC_Val;
+			tempCtrl.stepsel = DMAC_BTCTRL_STEPSEL_DST_Val;
+			tempCtrl.stepsize = DMAC_BTCTRL_STEPSIZE_X2_Val;
 			tempCtrl.dstinc = 1;
 			tempCtrl.valid = 1;
 			
 			tud_audio_write(mic_buf_hi, mic_buf_size * 2 );
 			
-			//dma_set_descriptor(i2s_rx_descriptor_b, ((mic_buf_size*2) >> data_shift), i2s_rx_reg, mic_buf_hi, i2s_rx_descriptor_a, tempCtrl);
-			dma_set_descriptor(i2s_rx_descriptor_b, ((mic_buf_size*2) >> data_shift), data_shift);
+			uint32_t* right_buf = (uint32_t*) ((uint32_t) mic_buf_hi + 2*data_shift);
+			dma_set_descriptor(i2s_lrx_descriptor_b, ((mic_buf_size) >> data_shift), i2s_rx_reg, mic_buf_hi, i2s_lrx_descriptor_a, tempCtrl);
+			dma_set_descriptor(i2s_rrx_descriptor_b, ((mic_buf_size) >> data_shift), i2s_rx_reg, right_buf, i2s_rrx_descriptor_a, tempCtrl);
+			//dma_set_descriptor(i2s_rx_descriptor_b, ((mic_buf_size*2) >> data_shift), data_shift);
 		}
 		
 		bool fs_pin = PORT->Group[0].IN.reg & (1 << 11);
 		static bool fs_prev;
+		/*
 		if (!DMAC->BUSYCH.bit.BUSYCH0 && (fs_prev != fs_pin)){
 			bool state;
 			uint32_t tempReg = DMAC->ACTIVE.reg;
@@ -802,19 +866,20 @@ void audio_task(void)
 				DMAC->CHINTENSET.bit.SUSP = 1;
 			}
 		}
-		fs_prev = fs_pin;
-		
+		/**/
 		// Dual DMA:
-		/*
+		if (fs_pin != fs_prev){
 		if (fs_pin) {
 			dma_resume(0);
-			DMAC->CHID.reg = 0;
-			DMAC->CHINTENSET.bit.SUSP = 1;
+			//DMAC->CHID.reg = 0;
+			//DMAC->CHINTENSET.bit.SUSP = 1;
 		} else {
 			dma_resume(1);
-			DMAC->CHID.reg = 1;
-			DMAC->CHINTENSET.bit.SUSP = 1;
+			//DMAC->CHID.reg = 1;
+			//DMAC->CHINTENSET.bit.SUSP = 1;
 		}
+		}
+		fs_prev = fs_pin;
 		/**/
 	}
 }
