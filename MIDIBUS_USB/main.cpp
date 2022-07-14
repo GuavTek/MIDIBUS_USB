@@ -682,8 +682,8 @@ void audio_task(void)
 	
 			uint16_t new_data_size;
 			new_data_size = tud_audio_read(spk_buf_lo, spk_buf_size * 2 );
-			spk_data_new -= new_data_size;
 			new_data_size >>= data_shift;
+			spk_data_new -= new_data_size << data_shift;
 			
 			if (new_data_size == 0){
 				dropped_bytes += spk_data_new;
@@ -704,8 +704,8 @@ void audio_task(void)
 			
 			uint16_t new_data_size;
 			new_data_size = tud_audio_read(spk_buf_hi, spk_buf_size * 2 );
-			spk_data_new -= new_data_size;
 			new_data_size >>= data_shift;
+			spk_data_new -= new_data_size << data_shift;
 			
 			if (new_data_size == 0){
 				dropped_bytes += spk_data_new;
