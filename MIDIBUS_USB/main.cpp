@@ -71,9 +71,6 @@ int main(void)
 	PORT->Group[0].DIRSET.reg = (1 << 16) | (1 << 17);
 	PORT->Group[0].OUTCLR.reg = 1 << 16;
 
-	// Enable USB ID pin
-	PORT->Group[0].DIRCLR.reg = (1 << 27);
-	PORT->Group[0].PINCFG[27].bit.INEN = 1;
 	
 	USB_Init();
 	tusb_init();
@@ -150,6 +147,9 @@ void USB_Init(){
 	pin_set_peripheral_function(PINMUX_PA24G_USB_DM);
 	pin_set_peripheral_function(PINMUX_PA25G_USB_DP);
 	
+	// Enable USB ID pin
+	PORT->Group[0].DIRCLR.reg = (1 << 27);
+	PORT->Group[0].PINCFG[27].bit.INEN = 1;
 }
 
 // Handle MIDI CAN data
