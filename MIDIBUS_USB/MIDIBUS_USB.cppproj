@@ -520,6 +520,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Audio_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Audio_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="DMA_driver.cpp">
       <SubType>compile</SubType>
     </Compile>
