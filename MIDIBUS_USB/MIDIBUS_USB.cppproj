@@ -826,6 +826,9 @@
     <Compile Include="tinyusb\src\portable\microchip\samd\dcd_samd.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="tinyusb\src\portable\microchip\samd\hcd_samd.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="tinyusb\src\portable\microchip\samg\dcd_samg.c">
       <SubType>compile</SubType>
     </Compile>
