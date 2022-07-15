@@ -7,6 +7,14 @@
 
 #include "I2S_driver.h"
 
+DMA_Descriptor_t* i2s_rx_descriptor_a = &base_descriptor[0];
+DMA_Descriptor_t* i2s_rx_descriptor_b = &transact_descriptor[0];
+DMA_Descriptor_t* i2s_rx_descriptor_wb = &wrback_descriptor[0];
+
+DMA_Descriptor_t* i2s_tx_descriptor_a = &base_descriptor[1];
+DMA_Descriptor_t* i2s_tx_descriptor_b = &transact_descriptor[1];
+DMA_Descriptor_t* i2s_tx_descriptor_wb = &wrback_descriptor[1];
+
 void i2s_init(const uint32_t samplerate){
 	// Set up pin functions
 	PORT->Group[0].DIRCLR.reg = 1 << 7;

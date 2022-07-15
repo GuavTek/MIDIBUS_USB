@@ -7,6 +7,10 @@
 
 #include "DMA_driver.h" 
 
+DMA_Descriptor_t base_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
+DMA_Descriptor_t wrback_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
+DMA_Descriptor_t transact_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
+
 void dma_init(DMA_Descriptor_t* base_address, DMA_Descriptor_t* wrb_address){
 	// Enable clocks
 	PM->APBBMASK.reg |= PM_APBBMASK_DMAC;

@@ -11,11 +11,22 @@
 
 #include "sam.h"
 #include "asf.h"
+#include "DMA_driver.h"
 
 enum {
 	I2S_FS_LEFT_MAYBE,
 	I2S_FS_RIGHT_MAYBE
 } i2s_fs_state;
+
+
+// DMA descriptors
+extern DMA_Descriptor_t* i2s_rx_descriptor_a;
+extern DMA_Descriptor_t* i2s_rx_descriptor_b;
+extern DMA_Descriptor_t* i2s_rx_descriptor_wb;
+
+extern DMA_Descriptor_t* i2s_tx_descriptor_a;
+extern DMA_Descriptor_t* i2s_tx_descriptor_b;
+extern DMA_Descriptor_t* i2s_tx_descriptor_wb;
 
 void i2s_init(uint32_t samplerate);
 void i2s_set_freq(uint32_t samplerate);

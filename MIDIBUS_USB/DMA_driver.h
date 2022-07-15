@@ -53,6 +53,11 @@ typedef struct DMA_Descriptor_t {
 }
 #endif
 
+#define DMA_CHANNELS 2
+extern DMA_Descriptor_t base_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
+extern DMA_Descriptor_t wrback_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
+extern DMA_Descriptor_t transact_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
+
 void dma_init(DMA_Descriptor_t* base_address, DMA_Descriptor_t* wrb_address);
 
 void dma_attach(uint8_t channel, const DMA_Channel_config config);
