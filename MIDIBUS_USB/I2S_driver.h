@@ -20,13 +20,19 @@ enum {
 
 
 // DMA descriptors
-extern DMA_Descriptor_t* i2s_rx_descriptor_a;
-extern DMA_Descriptor_t* i2s_rx_descriptor_b;
-extern DMA_Descriptor_t* i2s_rx_descriptor_wb;
+extern DMA_Descriptor_t* i2s_lrx_descriptor_a;
+extern DMA_Descriptor_t* i2s_lrx_descriptor_b;
+extern DMA_Descriptor_t* i2s_lrx_descriptor_wb;
+extern DMA_Descriptor_t* i2s_rrx_descriptor_a;
+extern DMA_Descriptor_t* i2s_rrx_descriptor_b;
+extern DMA_Descriptor_t* i2s_rrx_descriptor_wb;
 
-extern DMA_Descriptor_t* i2s_tx_descriptor_a;
-extern DMA_Descriptor_t* i2s_tx_descriptor_b;
-extern DMA_Descriptor_t* i2s_tx_descriptor_wb;
+extern DMA_Descriptor_t* i2s_ltx_descriptor_a;
+extern DMA_Descriptor_t* i2s_ltx_descriptor_b;
+extern DMA_Descriptor_t* i2s_ltx_descriptor_wb;
+extern DMA_Descriptor_t* i2s_rtx_descriptor_a;
+extern DMA_Descriptor_t* i2s_rtx_descriptor_b;
+extern DMA_Descriptor_t* i2s_rtx_descriptor_wb;
 
 void i2s_init(uint32_t samplerate);
 void i2s_set_freq(uint32_t samplerate);

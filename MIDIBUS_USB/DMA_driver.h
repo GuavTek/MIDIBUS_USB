@@ -53,7 +53,7 @@ typedef struct DMA_Descriptor_t {
 }
 #endif
 
-#define DMA_CHANNELS 2
+#define DMA_CHANNELS 4
 extern DMA_Descriptor_t base_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
 extern DMA_Descriptor_t wrback_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
 extern DMA_Descriptor_t transact_descriptor[DMA_CHANNELS] __attribute__ ((aligned(16)));
