@@ -79,7 +79,7 @@ uint8_t const * tud_descriptor_device_cb(void)
 
 // 0 control, 1 In, 2 Bulk, 3 Iso, 4 In etc...
 #define EPNUM_AUDIO_IN    0x03
-#define EPNUM_AUDIO_OUT   0x03
+#define EPNUM_AUDIO_OUT   0x06
 #define EPNUM_MIDI_OUT   0x02
 #define EPNUM_MIDI_IN   0x02
 

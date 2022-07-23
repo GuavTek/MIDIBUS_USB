@@ -74,7 +74,6 @@ extern "C" {
 //--------------------------------------------------------------------
 
 #define CFG_TUD_ENDPOINT0_SIZE		64
-//#define CFG_TUD_ENDPOINT1_SIZE		64
 
 //------------- CLASS -------------//
 #define CFG_TUD_AUDIO		1
