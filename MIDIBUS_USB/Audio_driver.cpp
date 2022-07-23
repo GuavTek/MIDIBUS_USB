@@ -367,35 +367,6 @@ bool tud_audio_rx_done_pre_read_cb(uint8_t rhport, uint16_t n_bytes_received, ui
 	return true;
 }
 
-/*
-bool tud_audio_rx_done_post_read_cb(uint8_t rhport, uint16_t n_bytes_received, uint8_t func_id, uint8_t ep_out, uint8_t cur_alt_setting)
-{
-	(void)rhport;
-	(void)func_id;
-	(void)ep_out;
-	(void)cur_alt_setting;
-	
-	//if (spk_data_new > 0){
-	//	PORT->Group[0].OUTSET.reg = 1 << 16;
-	//}
-	
-	//spk_data_new += n_bytes_received;
-	
-	return true;
-}
-
-bool tud_audio_tx_done_pre_load_cb(uint8_t rhport, uint8_t itf, uint8_t ep_in, uint8_t cur_alt_setting)
-{
-	(void)rhport;
-	(void)itf;
-	(void)ep_in;
-	(void)cur_alt_setting;
-
-	// This callback could be used to fill microphone data separately
-	return true;
-}
-*/
-
 //--------------------------------------------------------------------+
 // AUDIO Task
 //--------------------------------------------------------------------+
@@ -404,17 +375,7 @@ uint32_t* const i2s_tx_reg = (uint32_t*) &I2S->DATA[1].reg;
 uint32_t* const i2s_rx_reg = (uint32_t*) &I2S->DATA[0].reg;
 
 void audio_dma_init(){
-	DMA_BTCTRL_t tempCtrl; /*{
-		.valid = 0,
-		.evosel = DMAC_BTCTRL_EVOSEL_BEAT_Val,
-		.blockact = DMAC_BTCTRL_BLOCKACT_NOACT_Val,
-		.reserved = 0,
-		.beatsize = DMAC_BTCTRL_BEATSIZE_HWORD_Val,
-		.srcinc = 0,
-		.dstinc = 1,
-		.stepsel = 0,
-		.stepsize = 0
-	}; */
+	DMA_BTCTRL_t tempCtrl;
 	tempCtrl.word = 0;
 	tempCtrl.evosel = DMAC_BTCTRL_EVOSEL_BEAT_Val;
 	tempCtrl.blockact = DMAC_BTCTRL_BLOCKACT_NOACT_Val;
@@ -473,7 +434,6 @@ void audio_task(void)
 		i2s_ltx_descriptor_b->btctrl.valid = 0;
 		i2s_rtx_descriptor_b->btctrl.valid = 0;
 	}
-	/**/
 	
 	// Speaker data waiting?
 	if (spk_data_new != 0){
@@ -643,4 +603,4 @@ void audio_task(void)
 		/**/
 	}
 }
-
+/**/

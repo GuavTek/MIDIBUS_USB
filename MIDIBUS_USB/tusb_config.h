@@ -65,6 +65,7 @@ extern "C" {
 #define CFG_TUH_MIDI                  4
 #define CFG_TUH_MIDI_EPIN_BUFSIZE    64
 #define CFG_TUH_MIDI_EPOUT_BUFSIZE   64
+#define CFG_TUH_ENDPOINT_MAX 8	// temp
 
 
 
