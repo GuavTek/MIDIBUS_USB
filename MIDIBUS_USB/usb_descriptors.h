@@ -26,6 +26,7 @@
 #ifndef USB_DESCRIPTORS_H_
 #define USB_DESCRIPTORS_H_
 
+#if CFG_TUD_ENABLED > 0
 // Unit numbers are arbitrary selected
 #define UAC2_ENTITY_CLOCK               0x04
 // Speaker path
@@ -152,7 +153,7 @@ TUD_AUDIO_DESC_STD_AS_ISO_EP(/*_ep*/ _epin, /*_attr*/ (TUSB_XFER_ISOCHRONOUS | T
 /* Class-Specific AS Isochronous Audio Data Endpoint Descriptor(4.10.1.2) */\
 TUD_AUDIO_DESC_CS_AS_ISO_EP(/*_attr*/ AUDIO_CS_AS_ISO_DATA_EP_ATT_NON_MAX_PACKETS_OK, /*_ctrl*/ AUDIO_CTRL_NONE, /*_lockdelayunit*/ AUDIO_CS_AS_ISO_DATA_EP_LOCK_DELAY_UNIT_UNDEFINED, /*_lockdelay*/ 0x0000)
 
-
+#endif
 
 
 #endif /* USB_DESCRIPTORS_H_ */
