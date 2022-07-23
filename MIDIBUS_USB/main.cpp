@@ -31,7 +31,7 @@ void MIDI_USB_UMP_handler(struct MIDI_UMP_t* msg);
 MIDI_C MIDI_USB(1);
 MIDI_C MIDI_CAN(2);
 
-uint32_t midiID = 616;
+uint32_t midiID = 239;
 uint32_t blinkTime = 100;
 uint32_t blinkTime2 = 100;
 volatile uint32_t system_ticks = 0;
@@ -171,6 +171,7 @@ void MIDI_CAN_UMP_handler(struct MIDI_UMP_t* msg){
 void MIDI_USB_UMP_handler(struct MIDI_UMP_t* msg){
 	char tempData[16];
 	uint8_t length;
+	msg->com.group = 1;
 	length = MIDI_CAN.Encode(tempData, msg, 2);
 	
 	CAN_Tx_msg_t txMsg;
@@ -247,3 +248,4 @@ void USB_Handler(void){
 void SERCOM5_Handler(void){
 	CAN.Handler();
 }
+
